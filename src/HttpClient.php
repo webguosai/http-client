@@ -35,7 +35,7 @@ $response = $http->timeout(1)->
                     withHeaders($headers)->
                     withProxy($proxy)->
                     withoutRedirecting()->
-                    //withAutoLoadCookie('F:\www\la\jfl\app\Lib\Http\cookie.txt')->
+                    //withAutoLoadCookie('cookie.txt')->
                     withIconv()->
                     get($url);
                     //asForm()->
