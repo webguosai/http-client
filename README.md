@@ -12,40 +12,64 @@
 
 - php >= 7.0
 - composer
-- laravel >= 7.30
 
 ## 安装
 
 ```Shell
-$ composer require webguosai/laravel-ocpc -vvv
+$ composer require webguosai/http-client -vvv
 ```
-
-### 添加 service provider（optional. if laravel < 5.5）
-
-```PHP
-// laravel < 5.5
-Webguosai\LaravelOcpc\OcpcServiceProvider::class,
-```
-
-### 添加 alias（optional. if laravel < 5.5）
-
-```PHP
-'Ocpc' => Webguosai\LaravelOcpc\Facades\Ocpc::class,
-```
-
-### 配置文件
-
-```Shell
-$ php artisan vendor:publish --provider="Webguosai\LaravelOcpc\OcpcServiceProvider"
-```
-
 
 ## 使用方法
 ```php
-use Ocpc;
+//超时
+timeout(1)
+//使用header头
+withHeaders(['user-agent' => 'chrome'])
+//使用代理ip
+withProxy($proxy)
+//允许重定向
+withoutRedirecting()
+//自动加载cookie
+withAutoLoadCookie()
+//转换编码
+withIconv
+//发送post格式的文档类型
+asForm()
+//发送json格式的文档类型
+asJson()
+//发送纯文本格式的文档类型
+asPlain()
+//发送get请求
+get($url)
+//发送post请求
+post($url, ['username' => '1111'])
+$response = $http->timeout(1)->
+                    withHeaders($headers)->
+                    withProxy($proxy)->
+                    withoutRedirecting()->
+                    //withAutoLoadCookie('F:\www\la\jfl\app\Lib\Http\cookie.txt')->
+                    withIconv()->
+                    get($url);
+                    //asForm()->
+                    //post($url, $posts);
 
-$a = Ocpc::test('guosaibaba');
-return view('Ocpc::ocpc',['msg' => $a]);
+//状态检测
+dump($response->ok());//curl无错误且http状态为200
+dump($response->curlError());//curl错误
+dump($response->errorMsg());//错误信息
+dump($response->clientError());//http在400 - 500之间，返回true
+dump($response->serverError());//http大于 500，返回true
+dump($response->responseContentType);//响应的文档类型
+dump($response->responseErrorCode); //curl状态码
+
+//响应
+dump($response->charset());//目标网站的编码
+dump($response->body());//body
+dump($response->json());//返回json数组
+dump($response->headers());//响应的header头
+dump($response->response());//响应的内容
+dump($response->httpStatus()); //响应的http状态
+dump($response->info()); //响应的其它数据
 ```
 
 ## License
