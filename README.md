@@ -21,7 +21,7 @@ $ composer require webguosai/http-client -vvv
 
 ## 使用方法
 ```php
-use Webguosai\HttpClient;
+use Webguosai;
 $http = new HttpClient();
 $response = $http->timeout(1)->get('http://www.baidu.com');
 var_dump($response->body());
