@@ -10,7 +10,7 @@
 
 ## 运行环境
 
-- php >= 7.0
+- php >= 5.6
 - composer
 
 ## 安装
@@ -21,6 +21,11 @@ $ composer require webguosai/http-client -vvv
 
 ## 使用方法
 ```php
+use Webguosai\HttpClient;
+$http = new HttpClient();
+$response = $http->timeout(1)->get('http://www.baidu.com');
+var_dump($response->body());
+
 //超时
 timeout(1)
 //使用header头

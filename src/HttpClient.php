@@ -1,105 +1,54 @@
 <?php
 
-namespace Webguosai\HttpClient;
+namespace Webguosai;
 
 /**
- * ´´½¨×ÔÒÑÊ¹ÓÃµÄhttpÇëÇóÂÖ×Ó
- * Class Http
- * @package Webguosai\HttpClient
+ * åˆ›å»ºè‡ªå·²ä½¿ç”¨çš„httpè¯·æ±‚è½®å­
+ * 
+ * @package Webguosai
  *
- * Ê¹ÓÃ£º
- *
-//³¬Ê±
-timeout(1)
-//Ê¹ÓÃheaderÍ·
-withHeaders(['user-agent' => 'chrome'])
-//Ê¹ÓÃ´úÀíip
-withProxy($proxy)
-//ÔÊĞíÖØ¶¨Ïò
-withoutRedirecting()
-//×Ô¶¯¼ÓÔØcookie
-withAutoLoadCookie()
-//×ª»»±àÂë
-withIconv
-//·¢ËÍpost¸ñÊ½µÄÎÄµµÀàĞÍ
-asForm()
-//·¢ËÍjson¸ñÊ½µÄÎÄµµÀàĞÍ
-asJson()
-//·¢ËÍ´¿ÎÄ±¾¸ñÊ½µÄÎÄµµÀàĞÍ
-asPlain()
-//·¢ËÍgetÇëÇó
-get($url)
-//·¢ËÍpostÇëÇó
-post($url, ['username' => '1111'])
-$response = $http->timeout(1)->
-                    withHeaders($headers)->
-                    withProxy($proxy)->
-                    withoutRedirecting()->
-                    //withAutoLoadCookie('cookie.txt')->
-                    withIconv()->
-                    get($url);
-                    //asForm()->
-                    //post($url, $posts);
-
-//×´Ì¬¼ì²â
-dump($response->ok());//curlÎŞ´íÎóÇÒhttp×´Ì¬Îª200
-dump($response->curlError());//curl´íÎó
-dump($response->errorMsg());//´íÎóĞÅÏ¢
-dump($response->clientError());//httpÔÚ400 - 500Ö®¼ä£¬·µ»Øtrue
-dump($response->serverError());//http´óÓÚ 500£¬·µ»Øtrue
-dump($response->responseContentType);//ÏìÓ¦µÄÎÄµµÀàĞÍ
-dump($response->responseErrorCode); //curl×´Ì¬Âë
-
-//ÏìÓ¦
-dump($response->charset());//Ä¿±êÍøÕ¾µÄ±àÂë
-dump($response->body());//body
-dump($response->json());//·µ»ØjsonÊı×é
-dump($response->headers());//ÏìÓ¦µÄheaderÍ·
-dump($response->response());//ÏìÓ¦µÄÄÚÈİ
-dump($response->httpStatus()); //ÏìÓ¦µÄhttp×´Ì¬
-dump($response->info()); //ÏìÓ¦µÄÆäËüÊı¾İ
  */
 class HttpClient
 {
     protected $version = '1.0';
-    //³¬Ê±(0±íÊ¾ÎŞÏŞÖÆ)
+    //è¶…æ—¶(0è¡¨ç¤ºæ— é™åˆ¶)
     protected $timeOut = 5;
-    //headerÊı¾İ
+    //headeræ•°æ®
     protected $headers = [];
-    //postÊı¾İ
+    //postæ•°æ®
     protected $post = [];
-    //ÊÇ·ñÔÊĞíÖØ¶¨Ïò
+    //æ˜¯å¦å…è®¸é‡å®šå‘
     protected $redirect = false;
-    //ÇëÇó×î¶àÖØ¶¨ÏòµÄ´ÎÊı
+    //è¯·æ±‚æœ€å¤šé‡å®šå‘çš„æ¬¡æ•°
     protected $redirectMaxNum = 5;
-    //×Ô¶¯¼ÓÔØcookie
+    //è‡ªåŠ¨åŠ è½½cookie
     protected $autoLoadCookie = false;
-    //×Ô¶¯¼ÓÔØcookieºó±£´æµÄÄ¿Â¼
+    //è‡ªåŠ¨åŠ è½½cookieåä¿å­˜çš„ç›®å½•
     protected $cookieSavePath = '';
-    //´úÀíÊı¾İ
+    //ä»£ç†æ•°æ®
     protected $proxy = '';
-    //ÊÇ·ñ×ª»»±àÂë
+    //æ˜¯å¦è½¬æ¢ç¼–ç 
     protected $isIconv = false;
-    //µ±Ç°±àÂë
+    //å½“å‰ç¼–ç 
     protected $defaultCharset = 'utf-8';
 
-    //ÏìÓ¦µÄÄÚÈİ
+    //å“åº”çš„å†…å®¹
     protected $response;
-    //ÏìÓ¦µÄĞÅÏ¢
+    //å“åº”çš„ä¿¡æ¯
     protected $responseInfo;
-    //ÏìÓ¦µÄbodyÄÚÈİ
+    //å“åº”çš„bodyå†…å®¹
     protected $responseBody;
-    //ÏìÓ¦µÄheaderÍ·
+    //å“åº”çš„headerå¤´
     protected $responseHeaders;
-    //ÏìÓ¦µÄhttp×´Ì¬
+    //å“åº”çš„httpçŠ¶æ€
     protected $responseHttpStatus;
-    //curl·µ»ØµÄ×´Ì¬Âë
+    //curlè¿”å›çš„çŠ¶æ€ç 
     public $responseErrorCode = 0;
-    //ÏìÓ¦µÄÎÄµµÀàĞÍ
+    //å“åº”çš„æ–‡æ¡£ç±»å‹
     public $responseContentType;
 
     /**
-     * GETÇëÇó
+     * GETè¯·æ±‚
      */
     public function get(string $url)
     {
@@ -108,7 +57,7 @@ class HttpClient
     }
 
     /**
-     * POSTÇëÇó
+     * POSTè¯·æ±‚
      */
     public function post(string $url, $post)
     {
@@ -128,15 +77,15 @@ class HttpClient
         return $this;
     }
 
-    //¼ÓÔØheaderÍ·
+    //åŠ è½½headerå¤´
     public function withHeaders($headers)
     {
         if (is_string($headers)) {
-            //×Ö·û´®(Ò»°ãÊÇ´Óä¯ÀÀÆ÷ÖĞ¸´ÖÆ)
+            //å­—ç¬¦ä¸²(ä¸€èˆ¬æ˜¯ä»æµè§ˆå™¨ä¸­å¤åˆ¶)
             $headers = explode("\n", $headers);
         }
 
-        //½«ËùÓĞheader×ª»»Îª:['user-agent' => 'chrome'] ÕâÖÖ¸ñÊ½
+        //å°†æ‰€æœ‰headerè½¬æ¢ä¸º:['user-agent' => 'chrome'] è¿™ç§æ ¼å¼
         foreach ($headers as $key => $value) {
             if (is_int($key)) {
                 if (stripos($value, ':') !== false) {
@@ -152,21 +101,21 @@ class HttpClient
         return $this;
     }
 
-    //ÔÊĞíÖØ¶¨Ïò
+    //å…è®¸é‡å®šå‘
     public function withoutRedirecting()
     {
         $this->redirect = true;
         return $this;
     }
 
-    //Ê¹ÓÃ´úÀíip
+    //ä½¿ç”¨ä»£ç†ip
     public function withProxy($proxy)
     {
         $this->proxy = $proxy;
         return $this;
     }
 
-    //×Ô¶¯ÔØÈëcookie
+    //è‡ªåŠ¨è½½å…¥cookie
     public function withAutoLoadCookie($cookiePath)
     {
         //if (file_exists($cookiePath)) {
@@ -178,7 +127,7 @@ class HttpClient
         return $this;
     }
 
-    //×Ô¶¯×ª»»±àÂë
+    //è‡ªåŠ¨è½¬æ¢ç¼–ç 
     public function withIconv()
     {
         $this->isIconv = true;
@@ -207,28 +156,28 @@ class HttpClient
     {
         $body = $this->responseBody;
 
-        //×Ô¶¯×ª»»±àÂë
+        //è‡ªåŠ¨è½¬æ¢ç¼–ç 
         if ($this->isIconv) {
 
             $charset = $this->charset();
             //var_dump($charset);
 
             if (empty($charset)) {
-                //Èç¹ûÃ»ÓĞ´Óheader¡¢html±êÇ©ÖĞ»ñÈ¡µ½×Ö·û¼¯£¬Ôò×Ô¶¯ÅĞ¶Ï×Ö·û¼¯²¢×ªÂë
+                //å¦‚æœæ²¡æœ‰ä»headerã€htmlæ ‡ç­¾ä¸­è·å–åˆ°å­—ç¬¦é›†ï¼Œåˆ™è‡ªåŠ¨åˆ¤æ–­å­—ç¬¦é›†å¹¶è½¬ç 
                 $body = $this->autoCharset($body, $this->defaultCharset);
             } elseif ($charset != $this->defaultCharset) {
-                //²»ÊÇÄ¬ÈÏµÄ×Ö·û¼¯£¬ÔÙ×ª»»{test/tools/curl_char/}
+                //ä¸æ˜¯é»˜è®¤çš„å­—ç¬¦é›†ï¼Œå†è½¬æ¢{test/tools/curl_char/}
 
                 //var_dump($content_char);exit;
-                //¹ıÂËÒ»ÏÂiconvÖ»ÔÊĞíµÄ×ª»»×Ö·û¼¯
-                //mb_list_encodings()¿É´òÓ¡³öphpËùÓĞ×Ö·û¼¯
+                //è¿‡æ»¤ä¸€ä¸‹iconvåªå…è®¸çš„è½¬æ¢å­—ç¬¦é›†
+                //mb_list_encodings()å¯æ‰“å°å‡ºphpæ‰€æœ‰å­—ç¬¦é›†
                 //$allows = array_map('strtolower',mb_list_encodings());
                 //var_dump($allows);exit;
-                //$allows[] = 'gb2312';//³£¼ûµÄ×Ö·û¼¯ÓĞ:UTF-8£¬GBK£¬GB2312£¬*ISO-8859-1£¬*UTF-16
+                //$allows[] = 'gb2312';//å¸¸è§çš„å­—ç¬¦é›†æœ‰:UTF-8ï¼ŒGBKï¼ŒGB2312ï¼Œ*ISO-8859-1ï¼Œ*UTF-16
                 //if (in_array($content_char, $allows)) {
-                //¿ªÊ¼×ªÂë,
+                //å¼€å§‹è½¬ç ,
                 //gbk gb2312,iso-8859-1,us-ascii
-                //Ö¸¶¨µÄ²Å×ªÂë£¬·ñÔò»á³ö´í
+                //æŒ‡å®šçš„æ‰è½¬ç ï¼Œå¦åˆ™ä¼šå‡ºé”™
                 if (in_array($charset, array('gbk', 'gb2312', 'iso-8859-1', 'us-ascii'))) {
                     $body = iconv($charset, $this->defaultCharset . '//IGNORE', $body);
                 }
@@ -236,12 +185,12 @@ class HttpClient
                 //}
             }
 
-            //×ª»»ºó£¬ĞèÒªĞŞ¸ÄbodyÖĞµÄ<meta>±àÂë±êÇ©
+            //è½¬æ¢åï¼Œéœ€è¦ä¿®æ”¹bodyä¸­çš„<meta>ç¼–ç æ ‡ç­¾
             $metaRex = '#(<meta[^>]+charset=["\']*?)([^ "\'>]+)([^>]*>)#i';// {/test/html/charset.html}
             if (preg_match($metaRex, $body)) {
                 $body = preg_replace($metaRex, '${1}' . $this->defaultCharset . '${3}', $body);
             } else {
-                //Ã»ÓĞÇ°¶Ë×Ö·û¼¯±êÇ©(Éú³Éµ½head½áÊø±êÇ©µÄÇ°Ãæ)
+                //æ²¡æœ‰å‰ç«¯å­—ç¬¦é›†æ ‡ç­¾(ç”Ÿæˆåˆ°headç»“æŸæ ‡ç­¾çš„å‰é¢)
                 //$body = preg_replace('#</head>#i', "<meta charset=\"".$this->defaultCharset."\">\n$0", $body);
             }
         }
@@ -266,27 +215,27 @@ class HttpClient
         return $this->responseHttpStatus;
     }
 
-    //»ñÈ¡ÎÄµµ±àÂë
+    //è·å–æ–‡æ¡£ç¼–ç 
     public function charset()
     {
         $headerRex = '#charset=([^ ;,\r\n]+)#i';
         $htmlRex   = '#<meta[^>]+charset=["\']*?([^ "\'>]+)[^>]*>#i';
 
         if (preg_match($headerRex, $this->responseContentType, $mat)) {
-            //ÒÔheaderÍ·µÄ×Ö·û¼¯ÓÅÏÈ
+            //ä»¥headerå¤´çš„å­—ç¬¦é›†ä¼˜å…ˆ
             $charset = trim($mat[1]);
         } elseif (preg_match($htmlRex, $this->responseBody, $mat)) {
-            //headerÍ·Ã»ÓĞ¾ÍÅĞ¶ÏhtmlÖĞµÄ×Ö·û¼¯±êÇ©
+            //headerå¤´æ²¡æœ‰å°±åˆ¤æ–­htmlä¸­çš„å­—ç¬¦é›†æ ‡ç­¾
             $charset = trim($mat[1]);
         } else {
-            //¼ÈÃ»ÓĞÔÚheaderÖĞÕÒµ½,Ò²Ã»ÓĞÔÚbodyÖĞÕÒµ½
+            //æ—¢æ²¡æœ‰åœ¨headerä¸­æ‰¾åˆ°,ä¹Ÿæ²¡æœ‰åœ¨bodyä¸­æ‰¾åˆ°
             return '';
         }
 
-        //×ªÎªĞ¡Ğ´,²¢Ìæ»»ÒıºÅ
+        //è½¬ä¸ºå°å†™,å¹¶æ›¿æ¢å¼•å·
         $charset = str_replace(array('"', "'"), array('', ''), strtolower($charset));
 
-        //Ä³Ğ©ÍøÕ¾Ê¹ÓÃ´íÎóµÄ±ğÃû
+        //æŸäº›ç½‘ç«™ä½¿ç”¨é”™è¯¯çš„åˆ«å
         if (in_array($charset, array('utf8')) !== false) {
             $charset = 'utf-8';
         }
@@ -305,10 +254,10 @@ class HttpClient
     }
 
 
-    //½âÎö·¢ËÍµÄheaderÍ·
+    //è§£æå‘é€çš„headerå¤´
     public function parseHeaders()
     {
-        //½«ËùÓĞheader×ª»»ÎªcurlÄÜÊ¶±ğµÄ¸ñÊ½£¬Èç£º
+        //å°†æ‰€æœ‰headerè½¬æ¢ä¸ºcurlèƒ½è¯†åˆ«çš„æ ¼å¼ï¼Œå¦‚ï¼š
         // [0=>'user-agent:chrome', 1=>...]
         foreach ($this->headers as $key => $value) {
             if (is_string($key)) {
@@ -316,14 +265,14 @@ class HttpClient
             }
         }
 
-        //È¥ÖØ£¬²¢ÒÆ³ıkey
+        //å»é‡ï¼Œå¹¶ç§»é™¤key
         $headers = array_unique(array_values($headers));
 
         $this->headers = $headers;
         //return $headers;
     }
 
-    //curlÃ»ÓĞ´íÎó¡¢ÇÒhttp×´Ì¬·µ»Ø200±íÊ¾³É¹¦
+    //curlæ²¡æœ‰é”™è¯¯ã€ä¸”httpçŠ¶æ€è¿”å›200è¡¨ç¤ºæˆåŠŸ
     public function ok()
     {
         if ($this->responseErrorCode === 0 && $this->responseHttpStatus === 200) {
@@ -336,12 +285,12 @@ class HttpClient
     {
         if ($this->responseErrorCode !== 0) {
             $curlMsg = $this->curlCodeList()[$this->responseErrorCode];
-            return "curl´íÎó: {$curlMsg}[{$this->responseErrorCode}]";
+            return "curlé”™è¯¯: {$curlMsg}[{$this->responseErrorCode}]";
         }
 
         if ($this->responseHttpStatus !== 200) {
             $httpStatusMsg = $this->httpStatusList()[$this->responseHttpStatus];
-            return "ÏìÓ¦µÄhttp×´Ì¬´íÎó: {$httpStatusMsg}[{$this->responseHttpStatus}]";
+            return "å“åº”çš„httpçŠ¶æ€é”™è¯¯: {$httpStatusMsg}[{$this->responseHttpStatus}]";
         }
 
         return '';
@@ -361,7 +310,7 @@ class HttpClient
         return $this->httpStatus() >= 400 && $this->httpStatus() < 500;
     }
 
-    //http ´óÓÚ 500
+    //http å¤§äº 500
     public function serverError()
     {
         return $this->httpStatus() >= 500;
@@ -372,37 +321,37 @@ class HttpClient
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeOut);//³¬Ê±
+        curl_setopt($ch, CURLOPT_TIMEOUT, $this->timeOut);//è¶…æ—¶
 
-        //´úÀí
+        //ä»£ç†
         if ($this->proxy) {
             //var_dump( $this->proxy);exit;
             curl_setopt($ch, CURLOPT_PROXY, $this->proxy);
         }
 
-        //ä¯ÀÀÆ÷±êÊ¶
+        //æµè§ˆå™¨æ ‡è¯†
         //curl_setopt($ch, CURLOPT_USERAGENT, $params['user_agent']);
 
-        //À´Ô´
+        //æ¥æº
         //curl_setopt($ch, CURLOPT_REFERER, $params['referer']);
 
-        //µ±http×´Ì¬Îª301 302ÖØ¶¨ÏòµÄÊ±ºò¡£»á½øĞĞÌø×ª
+        //å½“httpçŠ¶æ€ä¸º301 302é‡å®šå‘çš„æ—¶å€™ã€‚ä¼šè¿›è¡Œè·³è½¬
         if ($this->redirect) {
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-            //ÉèÖÃÇëÇó×î¶àÖØ¶¨ÏòµÄ´ÎÊı
+            //è®¾ç½®è¯·æ±‚æœ€å¤šé‡å®šå‘çš„æ¬¡æ•°
             curl_setopt($ch, CURLOPT_MAXREDIRS, $this->redirectMaxNum);
         }
 
         //cookie
         if ($this->autoLoadCookie) {
-            curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookieSavePath);//´æ·ÅCookieĞÅÏ¢µÄÎÄ¼şÃû³Æ
-            curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookieSavePath);//¶ÁÈ¡ÉÏÃæËù´¢´æµÄCookieĞÅÏ¢
+            curl_setopt($ch, CURLOPT_COOKIEJAR, $this->cookieSavePath);//å­˜æ”¾Cookieä¿¡æ¯çš„æ–‡ä»¶åç§°
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $this->cookieSavePath);//è¯»å–ä¸Šé¢æ‰€å‚¨å­˜çš„Cookieä¿¡æ¯
         }
 
-        //×Ô¶¨Òåheaders
+        //è‡ªå®šä¹‰headers
         if ($this->headers) {
 
-            //×ª»»Ò»ÏÂheaderÊı¾İ
+            //è½¬æ¢ä¸€ä¸‹headeræ•°æ®
             $this->parseHeaders();
             //var_dump($this->headers);
 
@@ -414,24 +363,24 @@ class HttpClient
             curl_setopt($ch, CURLOPT_POSTFIELDS, $this->post);
         }
 
-        //Ö§³Öhttps
+        //æ”¯æŒhttps
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
 
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//²»Ö±½ÓÊä³öÏìÓ¦Êı¾İ
-        curl_setopt($ch, CURLOPT_ENCODING, '');//±àÂë
-        curl_setopt($ch, CURLOPT_HEADER, true);//»ñÈ¡header
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//ä¸ç›´æ¥è¾“å‡ºå“åº”æ•°æ®
+        curl_setopt($ch, CURLOPT_ENCODING, '');//ç¼–ç 
+        curl_setopt($ch, CURLOPT_HEADER, true);//è·å–header
 
-        //·¢ËÍÇëÇó
+        //å‘é€è¯·æ±‚
         $response = curl_exec($ch);
 
-        //ÏìÓ¦µÄcurl´íÎó´úÂë¡¢http×´Ì¬¡¢ÎÄµµÀàĞÍ¡¢info
+        //å“åº”çš„curlé”™è¯¯ä»£ç ã€httpçŠ¶æ€ã€æ–‡æ¡£ç±»å‹ã€info
         $errorCode   = curl_errno($ch);
         $httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         $info        = curl_getinfo($ch);
 
-        //»ñÈ¡ÏìÓ¦µÄheaderÍ·¡¢bodyÊı¾İ
+        //è·å–å“åº”çš„headerå¤´ã€bodyæ•°æ®
         $headerSize = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
         $headers    = array_filter(explode("\r\n", substr($response, 0, $headerSize)));
         $body       = substr($response, $headerSize, strlen($response));
@@ -447,11 +396,11 @@ class HttpClient
     }
 
     /**
-     * ×Ô¶¯×ªÂë
+     * è‡ªåŠ¨è½¬ç 
      *
      * @access     public
-     * @param string $str Òª×ªÂëµÄÄÚÈİ
-     * @param string $charset ×ªÂëºóµÄ±àÂë
+     * @param string $str è¦è½¬ç çš„å†…å®¹
+     * @param string $charset è½¬ç åçš„ç¼–ç 
      * @return     string
      */
     protected function autoCharset($str, $charset = 'UTF-8')
@@ -523,78 +472,78 @@ class HttpClient
     protected function curlCodeList()
     {
         return array(
-            0  => 'Õı³£·ÃÎÊ',
-            1  => '´íÎóµÄĞ­Òé',
-            2  => '³õÊ¼»¯´úÂëÊ§°Ü',
-            3  => 'URL¸ñÊ½²»ÕıÈ·',
-            4  => 'ÇëÇóĞ­Òé´íÎó',
-            5  => 'ÎŞ·¨½âÎö´úÀí',
-            6  => 'ÎŞ·¨½âÎöÖ÷»úµØÖ·',
-            7  => 'ÎŞ·¨Á¬½Óµ½Ö÷»ú',
-            8  => 'Ô¶³Ì·şÎñÆ÷²»¿ÉÓÃ',
-            9  => '·ÃÎÊ×ÊÔ´´íÎó',
-            11 => 'FTPÃÜÂë´íÎó',
-            13 => '½á¹û´íÎó',
-            14 => 'FTP»ØÓ¦PASVÃüÁî',
-            15 => 'ÄÚ²¿¹ÊÕÏ',
-            17 => 'ÉèÖÃ´«ÊäÄ£Ê½Îª¶ş½øÖÆ',
-            18 => 'ÎÄ¼ş´«Êä¶Ì»ò´óÓÚÔ¤ÆÚ',
-            19 => 'RETRÃüÁî´«ÊäÍê³É',
-            21 => 'ÃüÁî³É¹¦Íê³É',
-            22 => '·µ»ØÕı³£',
-            23 => 'Êı¾İĞ´ÈëÊ§°Ü',
-            25 => 'ÎŞ·¨Æô¶¯ÉÏ´«',
-            26 => '»Øµ÷´íÎó',
-            27 => 'ÄÚ´æ·ÖÅäÇëÇóÊ§°Ü',
-            28 => '·ÃÎÊ³¬Ê±',
-            30 => 'FTP¶Ë¿Ú´íÎó',
-            31 => 'FTP´íÎó',
-            33 => '²»Ö§³ÖÇëÇó',
-            34 => 'ÄÚ²¿·¢Éú´íÎó',
-            35 => 'SSL/TLSÎÕÊÖÊ§°Ü',
-            36 => 'ÏÂÔØÎŞ·¨»Ö¸´',
-            37 => 'ÎÄ¼şÈ¨ÏŞ´íÎó',
-            38 => 'LDAP¿ÉÃ»ÓĞÔ¼ÊøÁ¦',
-            39 => 'LDAPËÑË÷Ê§°Ü',
-            41 => 'º¯ÊıÃ»ÓĞÕÒµ½',
-            42 => 'ÖĞÖ¹µÄ»Øµ÷',
-            43 => 'ÄÚ²¿´íÎó',
-            45 => '½Ó¿Ú´íÎó',
-            47 => '¹ı¶àµÄÖØ¶¨Ïò',
-            48 => 'ÎŞ·¨Ê¶±ğÑ¡Ïî',
-            49 => 'TELNET¸ñÊ½´íÎó',
-            51 => 'Ô¶³Ì·şÎñÆ÷µÄSSLÖ¤Êé',
-            52 => '·şÎñÆ÷ÎŞ·µ»ØÄÚÈİ',
-            53 => '¼ÓÃÜÒıÇæÎ´ÕÒµ½',
-            54 => 'Éè¶¨Ä¬ÈÏSSL¼ÓÃÜÊ§°Ü',
-            55 => 'ÎŞ·¨·¢ËÍÍøÂçÊı¾İ',
-            56 => 'Ë¥½ß½ÓÊÕÍøÂçÊı¾İ',
-            58 => '±¾µØ¿Í»§¶ËÖ¤Êé',
-            59 => 'ÎŞ·¨Ê¹ÓÃÃÜÂë',
-            60 => 'Æ¾Ö¤ÎŞ·¨ÑéÖ¤',
-            61 => 'ÎŞ·¨Ê¶±ğµÄ´«Êä±àÂë',
-            62 => 'ÎŞĞ§µÄLDAP URL',
-            63 => 'ÎÄ¼ş³¬¹ı×î´ó´óĞ¡',
-            64 => 'FTPÊ§°Ü',
-            65 => 'µ¹´ø²Ù×÷Ê§°Ü',
-            66 => 'SSLÒıÇæÊ§°Ü',
-            67 => '·şÎñÆ÷¾Ü¾øµÇÂ¼',
-            68 => 'Î´ÕÒµ½ÎÄ¼ş',
-            69 => 'ÎŞÈ¨ÏŞ',
-            70 => '³¬³ö·şÎñÆ÷´ÅÅÌ¿Õ¼ä',
-            71 => '·Ç·¨TFTP²Ù×÷',
-            72 => 'Î´ÖªTFTP´«ÊäµÄID',
-            73 => 'ÎÄ¼şÒÑ¾­´æÔÚ',
-            74 => '´íÎóTFTP·şÎñÆ÷',
-            75 => '×Ö·û×ª»»Ê§°Ü',
-            76 => '±ØĞë¼ÇÂ¼»Øµ÷',
-            77 => 'CAÖ¤ÊéÈ¨ÏŞ',
-            78 => 'URLÖĞÒıÓÃ×ÊÔ´²»´æÔÚ',
-            79 => '´íÎó·¢ÉúÔÚSSH»á»°',
-            80 => 'ÎŞ·¨¹Ø±ÕSSLÁ¬½Ó',
-            81 => '·şÎñÎ´×¼±¸',
-            82 => 'ÎŞ·¨ÔØÈëCRLÎÄ¼ş',
-            83 => '·¢ĞĞÈË¼ì²éÊ§°Ü',
+            0  => 'æ­£å¸¸è®¿é—®',
+            1  => 'é”™è¯¯çš„åè®®',
+            2  => 'åˆå§‹åŒ–ä»£ç å¤±è´¥',
+            3  => 'URLæ ¼å¼ä¸æ­£ç¡®',
+            4  => 'è¯·æ±‚åè®®é”™è¯¯',
+            5  => 'æ— æ³•è§£æä»£ç†',
+            6  => 'æ— æ³•è§£æä¸»æœºåœ°å€',
+            7  => 'æ— æ³•è¿æ¥åˆ°ä¸»æœº',
+            8  => 'è¿œç¨‹æœåŠ¡å™¨ä¸å¯ç”¨',
+            9  => 'è®¿é—®èµ„æºé”™è¯¯',
+            11 => 'FTPå¯†ç é”™è¯¯',
+            13 => 'ç»“æœé”™è¯¯',
+            14 => 'FTPå›åº”PASVå‘½ä»¤',
+            15 => 'å†…éƒ¨æ•…éšœ',
+            17 => 'è®¾ç½®ä¼ è¾“æ¨¡å¼ä¸ºäºŒè¿›åˆ¶',
+            18 => 'æ–‡ä»¶ä¼ è¾“çŸ­æˆ–å¤§äºé¢„æœŸ',
+            19 => 'RETRå‘½ä»¤ä¼ è¾“å®Œæˆ',
+            21 => 'å‘½ä»¤æˆåŠŸå®Œæˆ',
+            22 => 'è¿”å›æ­£å¸¸',
+            23 => 'æ•°æ®å†™å…¥å¤±è´¥',
+            25 => 'æ— æ³•å¯åŠ¨ä¸Šä¼ ',
+            26 => 'å›è°ƒé”™è¯¯',
+            27 => 'å†…å­˜åˆ†é…è¯·æ±‚å¤±è´¥',
+            28 => 'è®¿é—®è¶…æ—¶',
+            30 => 'FTPç«¯å£é”™è¯¯',
+            31 => 'FTPé”™è¯¯',
+            33 => 'ä¸æ”¯æŒè¯·æ±‚',
+            34 => 'å†…éƒ¨å‘ç”Ÿé”™è¯¯',
+            35 => 'SSL/TLSæ¡æ‰‹å¤±è´¥',
+            36 => 'ä¸‹è½½æ— æ³•æ¢å¤',
+            37 => 'æ–‡ä»¶æƒé™é”™è¯¯',
+            38 => 'LDAPå¯æ²¡æœ‰çº¦æŸåŠ›',
+            39 => 'LDAPæœç´¢å¤±è´¥',
+            41 => 'å‡½æ•°æ²¡æœ‰æ‰¾åˆ°',
+            42 => 'ä¸­æ­¢çš„å›è°ƒ',
+            43 => 'å†…éƒ¨é”™è¯¯',
+            45 => 'æ¥å£é”™è¯¯',
+            47 => 'è¿‡å¤šçš„é‡å®šå‘',
+            48 => 'æ— æ³•è¯†åˆ«é€‰é¡¹',
+            49 => 'TELNETæ ¼å¼é”™è¯¯',
+            51 => 'è¿œç¨‹æœåŠ¡å™¨çš„SSLè¯ä¹¦',
+            52 => 'æœåŠ¡å™¨æ— è¿”å›å†…å®¹',
+            53 => 'åŠ å¯†å¼•æ“æœªæ‰¾åˆ°',
+            54 => 'è®¾å®šé»˜è®¤SSLåŠ å¯†å¤±è´¥',
+            55 => 'æ— æ³•å‘é€ç½‘ç»œæ•°æ®',
+            56 => 'è¡°ç«­æ¥æ”¶ç½‘ç»œæ•°æ®',
+            58 => 'æœ¬åœ°å®¢æˆ·ç«¯è¯ä¹¦',
+            59 => 'æ— æ³•ä½¿ç”¨å¯†ç ',
+            60 => 'å‡­è¯æ— æ³•éªŒè¯',
+            61 => 'æ— æ³•è¯†åˆ«çš„ä¼ è¾“ç¼–ç ',
+            62 => 'æ— æ•ˆçš„LDAP URL',
+            63 => 'æ–‡ä»¶è¶…è¿‡æœ€å¤§å¤§å°',
+            64 => 'FTPå¤±è´¥',
+            65 => 'å€’å¸¦æ“ä½œå¤±è´¥',
+            66 => 'SSLå¼•æ“å¤±è´¥',
+            67 => 'æœåŠ¡å™¨æ‹’ç»ç™»å½•',
+            68 => 'æœªæ‰¾åˆ°æ–‡ä»¶',
+            69 => 'æ— æƒé™',
+            70 => 'è¶…å‡ºæœåŠ¡å™¨ç£ç›˜ç©ºé—´',
+            71 => 'éæ³•TFTPæ“ä½œ',
+            72 => 'æœªçŸ¥TFTPä¼ è¾“çš„ID',
+            73 => 'æ–‡ä»¶å·²ç»å­˜åœ¨',
+            74 => 'é”™è¯¯TFTPæœåŠ¡å™¨',
+            75 => 'å­—ç¬¦è½¬æ¢å¤±è´¥',
+            76 => 'å¿…é¡»è®°å½•å›è°ƒ',
+            77 => 'CAè¯ä¹¦æƒé™',
+            78 => 'URLä¸­å¼•ç”¨èµ„æºä¸å­˜åœ¨',
+            79 => 'é”™è¯¯å‘ç”Ÿåœ¨SSHä¼šè¯',
+            80 => 'æ— æ³•å…³é—­SSLè¿æ¥',
+            81 => 'æœåŠ¡æœªå‡†å¤‡',
+            82 => 'æ— æ³•è½½å…¥CRLæ–‡ä»¶',
+            83 => 'å‘è¡Œäººæ£€æŸ¥å¤±è´¥',
         );
     }
 
