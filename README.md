@@ -19,62 +19,72 @@
 $ composer require webguosai/http-client -vvv
 ```
 
-## 使用方法
+## 使用
+### 初始化
 ```php
-use Webguosai;
-$http = new HttpClient();
-$response = $http->timeout(1)->get('http://www.baidu.com');
-var_dump($response->body());
+$options = [
+    //超时(单位秒)
+    'timeout'     => 3,
 
-//超时
-timeout(1)
-//使用header头
-withHeaders(['user-agent' => 'chrome'])
-//使用代理ip
-withProxy($proxy)
-//允许重定向
-withoutRedirecting()
-//自动加载cookie
-withAutoLoadCookie()
-//转换编码
-withIconv
-//发送post格式的文档类型
-asForm()
-//发送json格式的文档类型
-asJson()
-//发送纯文本格式的文档类型
-asPlain()
-//发送get请求
-get($url)
-//发送post请求
-post($url, ['username' => '1111'])
-$response = $http->timeout(1)->
-                    withHeaders($headers)->
-                    withProxy($proxy)->
-                    withoutRedirecting()->
-                    //withAutoLoadCookie('F:\www\la\jfl\app\Lib\Http\cookie.txt')->
-                    withIconv()->
-                    get($url);
-                    //asForm()->
-                    //post($url, $posts);
+    //代理ip池(允许填写多个,会随机使用一组)
+    'proxyIps'    => [
+        //格式为【ip:端口】
+        '0.0.0.0:8888'
+    ],
 
-//状态检测
-dump($response->ok());//curl无错误且http状态为200
-dump($response->curlError());//curl错误
-dump($response->errorMsg());//错误信息
-dump($response->clientError());//http在400 - 500之间，返回true
-dump($response->serverError());//http大于 500，返回true
-dump($response->responseContentType);//响应的文档类型
-dump($response->responseErrorCode); //curl状态码
+    //重定向、及最多重定向跳转次数
+    'redirects'   => false,
+    'redirectMax' => 5,
+    
+    //cookie自动保存路径
+    'cookieJarFile' => 'cookie.txt',
+];
+$http = new \Webguosai\HttpClient($options);
+```
 
-//响应
-dump($response->charset());//目标网站的编码
-dump($response->body());//body
-dump($response->json());//返回json数组
-dump($response->headers());//响应的header头
-dump($response->response());//响应的内容
-dump($response->httpStatus()); //响应的http状态
-dump($response->info()); //响应的其它数据
+### 请求
+```php
+$headers = [
+    'User-Agent' => 'http-client browser',
+    'cookie' => 'login=true'
+];
+$data = ['data' => '111', 'data2' => '222'];
+
+//所有方法
+$response = $http->get($url, $data, $headers);
+$response = $http->post($url, $data, $headers);
+$response = $http->put($url, $data, $headers);
+$response = $http->delete($url, $data, $headers);
+$response = $http->head($url, $data, $headers);
+$response = $http->options($url, $data, $headers);
+```
+
+### 响应
+```php
+$response->request; //请求
+$response->headers; //响应头
+$response->body; //响应body
+$response->httpStatus; //http状态码
+$response->info; //其它信息
+$response->ok();//http=200返回真
+$response->getHtml(); //获取html
+$response->json(); //json
+$response->getErrorMsg(); //错误信息
+$response->getChatset(); //编码
+```
+
+## 实操
+```php
+$options = [
+    'timeout'   => 3,
+];
+$http    = new \Webguosai\HttpClient($options);
+$response = $http->get('http://www.baidu.com');
+if ($response->ok()) {
+    var_dump($response->body);
+} else {
+    var_dump($response->getErrorMsg());
+}
 ```
 
 ## License

@@ -10,22 +10,23 @@ namespace Webguosai;
  */
 class HttpClient
 {
+    public $version = '2.0.0';
+    public $charset = 'utf-8';//当前编码
+
     /** 请求 **/
     public $request = [
         'headers' => [
             //'User-Agent: guosai browser',
-            //'X-HTTP-Method-Override: POST',
         ],
         'proxyIp' => '',
     ];
 
     /** 响应 **/
-    //响应的内容(不作编码处理)
-    public $body;
-    //响应的http状态
-    public $httpStatus;
-    public $errorCode;
-    public $contentType;
+    public $body; //响应的body内容
+    public $headers; //响应的header头信息
+    public $httpStatus; //http状态
+    public $errorCode = 0; //curl错误码
+    public $contentType; //文档类型
 
     /** 配置 **/
     public $options = [
@@ -42,39 +43,240 @@ class HttpClient
         'cookieJarFile' => '',
     ];
 
+    //是否设置过content-type头
+    protected $isSetContentType = false;
 
-    public function __construct($options)
+    //http状态列表
+    protected $httpStatusList = [
+        // Informational 1xx
+        100 => 'Continue',
+        101 => 'Switching Protocols',
+
+        // Success 2xx
+        200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
+        203 => 'Non-Authoritative Information',
+        204 => 'No Content',
+        205 => 'Reset Content',
+        206 => 'Partial Content',
+
+        // Redirection 3xx
+        300 => 'Multiple Choices',
+        301 => 'Moved Permanently',
+        302 => 'Found',  // 1.1
+        303 => 'See Other',
+        304 => 'Not Modified',
+        305 => 'Use Proxy',
+        // 306 is deprecated but reserved
+        307 => 'Temporary Redirect',
+
+        // Client Error 4xx
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Timeout',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Request Entity Too Large',
+        414 => 'Request-URI Too Long',
+        415 => 'Unsupported Media Type',
+        416 => 'Requested Range Not Satisfiable',
+        417 => 'Expectation Failed',
+
+        // Server Error 5xx
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway',
+        503 => 'Service Unavailable',
+        504 => 'Gateway Timeout',
+        505 => 'HTTP Version Not Supported',
+        509 => 'Bandwidth Limit Exceeded'
+    ];
+
+    //curl错误列表
+    protected $curlErrorList = [
+        0  => '正常访问',
+        1  => '错误的协议',
+        2  => '初始化代码失败',
+        3  => 'URL格式不正确',
+        4  => '请求协议错误',
+        5  => '无法解析代理',
+        6  => '无法解析主机地址',
+        7  => '无法连接到主机',
+        8  => '远程服务器不可用',
+        9  => '访问资源错误',
+        11 => 'FTP密码错误',
+        13 => '结果错误',
+        14 => 'FTP回应PASV命令',
+        15 => '内部故障',
+        17 => '设置传输模式为二进制',
+        18 => '文件传输短或大于预期',
+        19 => 'RETR命令传输完成',
+        21 => '命令成功完成',
+        22 => '返回正常',
+        23 => '数据写入失败',
+        25 => '无法启动上传',
+        26 => '回调错误',
+        27 => '内存分配请求失败',
+        28 => '访问超时',
+        30 => 'FTP端口错误',
+        31 => 'FTP错误',
+        33 => '不支持请求',
+        34 => '内部发生错误',
+        35 => 'SSL/TLS握手失败',
+        36 => '下载无法恢复',
+        37 => '文件权限错误',
+        38 => 'LDAP可没有约束力',
+        39 => 'LDAP搜索失败',
+        41 => '函数没有找到',
+        42 => '中止的回调',
+        43 => '内部错误',
+        45 => '接口错误',
+        47 => '过多的重定向',
+        48 => '无法识别选项',
+        49 => 'TELNET格式错误',
+        51 => '远程服务器的SSL证书',
+        52 => '服务器无返回内容',
+        53 => '加密引擎未找到',
+        54 => '设定默认SSL加密失败',
+        55 => '无法发送网络数据',
+        56 => '衰竭接收网络数据',
+        58 => '本地客户端证书',
+        59 => '无法使用密码',
+        60 => '凭证无法验证',
+        61 => '无法识别的传输编码',
+        62 => '无效的LDAP URL',
+        63 => '文件超过最大大小',
+        64 => 'FTP失败',
+        65 => '倒带操作失败',
+        66 => 'SSL引擎失败',
+        67 => '服务器拒绝登录',
+        68 => '未找到文件',
+        69 => '无权限',
+        70 => '超出服务器磁盘空间',
+        71 => '非法TFTP操作',
+        72 => '未知TFTP传输的ID',
+        73 => '文件已经存在',
+        74 => '错误TFTP服务器',
+        75 => '字符转换失败',
+        76 => '必须记录回调',
+        77 => 'CA证书权限',
+        78 => 'URL中引用资源不存在',
+        79 => '错误发生在SSH会话',
+        80 => '无法关闭SSL连接',
+        81 => '服务未准备',
+        82 => '无法载入CRL文件',
+        83 => '发行人检查失败',
+    ];
+
+    public function __construct($options = [])
     {
         $this->options = array_merge($this->options, $options);
         //var_dump($this->options); exit;
     }
 
-    public function get($url, $data, $headers = [])
+    //这个网站不错：https://www.runoob.com/php/php-ref-curl.html
+    public function get($url, $data = [], $headers = [])
     {
         return $this->request($url, 'GET', $data, $headers);
     }
 
     public function post($url, $data, $headers = [])
     {
+        if (is_string($data)) {
+            if (!is_null(json_decode($data))) {
+                $this->setContentType('json');
+            } else {
+                $this->setContentType('x-www-form-urlencoded');
+            }
+        } elseif (is_array($data)) {
+            $this->setContentType('form-data');
+        } else {
+            $this->setContentType('text');
+        }
+
         return $this->request($url, 'POST', $data, $headers);
     }
-    //这里好像必须是string
-    public function put($url, $data = '', $headers = [])
+
+    public function put($url = '', $data, $headers = [])
     {
-        $this->request['headers'][] = 'Content-Type: application/json';
-        return $this->request($url, 'PUT', $data, $headers);
+        return $this->custom($url, 'PUT', $data, $headers);
     }
 
-    public function delete($url, $data, $headers = [])
+    public function delete($url = '', $data, $headers = [])
     {
+        return $this->custom($url, 'DELETE', $data, $headers);
     }
 
-    public function head($url, $data, $headers = [])
+    public function head($url = '', $data, $headers = [])
     {
+        return $this->custom($url, 'HEAD', $data, $headers);
     }
 
-    public function options()
+    public function options($url = '', $data, $headers = [])
     {
+        return $this->custom($url, 'OPTIONS', $data, $headers);
+    }
+
+    /**
+     * 自定义的请求类型
+     * @param string $url
+     * @param string $method
+     * @param mixed $data
+     * @param array $headers
+     * @return $this
+     */
+    private function custom($url = '', $method = 'PUT', $data, $headers = [])
+    {
+        if (is_array($data)) {
+            $data = json_encode($data);
+        }
+
+        $this->setContentType('json');
+        return $this->request($url, $method, $data, $headers);
+    }
+
+    /**
+     * 设置content-type类型
+     * @param string $type (raw,json,form-data)
+     * @return $this
+     */
+    public function setContentType($type = 'raw')
+    {
+        /**
+         * form_data = multipart/form-data
+         * raw = text/plain
+         *
+         * x-www-form-urlencoded = application/x-www-form-urlencoded
+         * json = application/json
+         * xml = application/xml
+         *
+         */
+        if (!$this->isSetContentType) {
+            if ($type == 'form-data') {
+                $contentType = 'multipart/form-data';
+            } elseif (in_array($type, ['json', 'xml', 'x-www-form-urlencoded'])) {
+                $contentType = 'application/' . $type;
+            } else {
+                $contentType = 'text/plain';
+            }
+
+            $this->appendHeaders([
+                'Content-type: ' . $contentType,
+            ]);
+
+            $this->isSetContentType = true;
+        }
+
+        return $this;
     }
 
     public function request($url, $method = 'GET', $data, $headers = [])
@@ -85,7 +287,7 @@ class HttpClient
 
         //代理
         if (!empty($this->options['proxyIps'])) {
-            $this->request['proxyIp'] = array_rand($this->options['proxyIps']);
+            $this->request['proxyIp'] = $this->options['proxyIps'][array_rand($this->options['proxyIps'])];
             curl_setopt($ch, CURLOPT_PROXY, $this->request['proxyIp']);
         }
 
@@ -114,6 +316,10 @@ class HttpClient
 
         //设置请求方式
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
+
+        if ($method == 'HEAD') {
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+        }
 
         //post
         if ($data) {
@@ -147,6 +353,7 @@ class HttpClient
         $this->httpStatus  = $httpCode;
         $this->errorCode   = $errorCode;
         $this->contentType = $contentType;
+        $this->headers     = $headers;
         $this->info        = $info;
 
         return $this;
@@ -157,9 +364,29 @@ class HttpClient
         return @json_decode($this->body, true);
     }
 
-    //解析请求的header头
+    /**
+     * 追加header数据
+     * @param array $headers
+     */
+    protected function appendHeaders($headers = [])
+    {
+        foreach ($headers as $header) {
+            //去重，并移除key
+            $this->request['headers'][] = $header;
+        }
+
+        //去重，并移除key
+        $this->request['headers'] = array_unique(array_values($this->request['headers']));
+    }
+
+    /**
+     * 解析请求的header
+     * @param $headers
+     */
     protected function parseHeaders($headers)
     {
+        $parseHeaders = [];
+
         //字符串先转换为数组(一般由浏览器复制而来)
         if (is_string($headers)) {
             $headers = array_map(function ($data) {
@@ -171,16 +398,19 @@ class HttpClient
         //将所有header转换为curl能识别的格式
         foreach ($headers as $key => $value) {
             if (is_string($key)) {
-                $this->request['headers'][] = $key . ':' . $value;
+                $parseHeaders[] = $key . ':' . $value;
             } else {
-                $this->request['headers'][] = $value;
+                $parseHeaders[] = $value;
             }
         }
 
-        //去重，并移除key
-        $this->request['headers'] = array_unique(array_values($this->request['headers']));
+        $this->appendHeaders($parseHeaders);
     }
 
+    /**
+     * curl没有错误、且http状态返回200表示成功
+     * @return bool
+     */
     public function ok()
     {
         if ($this->errorCode === 0 && $this->httpStatus === 200) {
@@ -188,5 +418,131 @@ class HttpClient
         }
         return false;
     }
+
+    //获取编码
+    public function getChatset()
+    {
+        $headerRex = '#charset=([^ ;,\r\n]+)#i';
+        $htmlRex   = '#<meta[^>]+charset=["\']*?([^ "\'>]+)[^>]*>#i';
+
+        if (preg_match($headerRex, $this->contentType, $mat)) {
+            //以header头的字符集优先
+            $charset = trim($mat[1]);
+        } elseif (preg_match($htmlRex, $this->body, $mat)) {
+            //header头没有就判断html中的字符集标签
+            $charset = trim($mat[1]);
+        } else {
+            //既没有在header中找到,也没有在body中找到
+            return '';
+        }
+
+        //转为小写,并替换引号
+        $charset = str_replace(array('"', "'"), array('', ''), strtolower($charset));
+
+        //某些网站使用错误的别名
+        if (in_array($charset, array('utf8')) !== false) {
+            $charset = 'utf-8';
+        }
+
+        return $charset;
+    }
+
+    //获取转码后的html
+    public function getHtml($outCharset = 'utf-8')
+    {
+        //请求的内容编码
+        $charset = $this->getChatset();
+
+        $body = $this->body;
+
+        if (empty($charset)) {
+            //如果没有从header、html标签中获取到字符集，则自动判断字符集并转码
+            $body = $this->autoCharset($body, $outCharset);
+        } elseif ($charset != $outCharset) {
+            //指定的才转码，否则会出错
+            if (in_array($charset, array('gbk', 'gb2312', 'iso-8859-1', 'us-ascii'))) {
+                $body = iconv($charset, $outCharset . '//IGNORE', $body);
+            }
+        }
+
+        //转换后，需要修改body中的<meta>编码标签
+        $metaRex = '#(<meta[^>]+charset=["\']*?)([^ "\'>]+)([^>]*>)#i';// {/test/html/charset.html}
+        if (preg_match($metaRex, $body)) {
+            $body = preg_replace($metaRex, '${1}' . $outCharset . '${3}', $body);
+        } else {
+            //没有前端字符集标签(生成到head结束标签的前面)
+            //$body = preg_replace('#</head>#i', "<meta charset=\"".$outCharset."\">\n$0", $body);
+        }
+        return $body;
+    }
+
+    /**
+     * 错误信息
+     * @return string
+     */
+    public function getErrorMsg()
+    {
+        if ($this->errorCode !== 0) {
+            $curlMsg = $this->curlErrorList[$this->errorCode];
+            return "curl错误: {$curlMsg}[{$this->errorCode}]";
+        }
+
+        if ($this->httpStatus !== 200) {
+            $httpStatusMsg = $this->httpStatusList[$this->httpStatus];
+            return "响应的http状态错误: {$httpStatusMsg}[{$this->httpStatus}]";
+        }
+
+        return '';
+    }
+
+    /**
+     * 自动转码
+     *
+     * @access     public
+     * @param string $str 要转码的内容
+     * @param string $charset 转码后的编码
+     * @return     string
+     */
+    protected function autoCharset($str, $charset = 'UTF-8')
+    {
+        $mb_charset = mb_detect_encoding($str, array('UTF-8', 'GBK', 'LATIN1', 'BIG5', 'ISO-8859-1'));
+        if (strtolower($mb_charset) != strtolower($charset)) {
+            return mb_convert_encoding($str, $charset, $mb_charset);
+        }
+        return $str;
+    }
+
+    /**
+     * 是否为curl错误
+     *
+     * @return bool
+     */
+//    public function isCurlError()
+//    {
+//        if ($this->errorCode === 0) {
+//            return false;
+//        }
+//        return true;
+//    }
+
+    /**
+     * 是否为客户端错误 (http状态 400 ~ 500)
+     *
+     * @return bool
+     */
+//    public function isClientError()
+//    {
+//        return $this->httpStatus >= 400 && $this->httpStatus < 500;
+//    }
+
+    /**
+     * 是否为服务端错误 (http状态 大于 500)
+     *
+     * @return bool
+     */
+//    public function isServerError()
+//    {
+//        return $this->httpStatus >= 500;
+//    }
 
 }
