@@ -1,6 +1,6 @@
 {
     "name": "webguosai/http-client",
-    "description": "扩展包描述",
+    "description": "http客户端",
     "keywords": ["http", "httpclient"],
     "support": {
         "issues": "https://github.com/webguosai/http-client/issues",
