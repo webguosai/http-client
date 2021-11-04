@@ -3,15 +3,14 @@
 namespace Webguosai;
 
 /**
- * 创建自已使用的http请求轮子
+ * Http客户端
  *
  * @package Webguosai
  *
  */
 class HttpClient
 {
-    public $version = '2.0.0';
-    public $charset = 'utf-8';//当前编码
+    private $version = '2.0.1';
 
     /** 请求 **/
     public $request = [
@@ -36,18 +35,19 @@ class HttpClient
         //代理ip池
         'proxyIps'    => [],
 
-        //允许重定向
+        //允许重定向及重定向次数
         'redirects'   => false,
         'redirectMax' => 5,
 
+        //保存cookie的文件路径
         'cookieJarFile' => '',
     ];
 
     //是否设置过content-type头
-    protected $isSetContentType = false;
+    private $isSetContentType = false;
 
     //http状态列表
-    protected $httpStatusList = [
+    private $httpStatusList = [
         // Informational 1xx
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -180,10 +180,8 @@ class HttpClient
     public function __construct($options = [])
     {
         $this->options = array_merge($this->options, $options);
-        //var_dump($this->options); exit;
     }
 
-    //这个网站不错：https://www.runoob.com/php/php-ref-curl.html
     public function get($url, $data = [], $headers = [])
     {
         return $this->request($url, 'GET', $data, $headers);
@@ -224,59 +222,6 @@ class HttpClient
     public function options($url = '', $data, $headers = [])
     {
         return $this->custom($url, 'OPTIONS', $data, $headers);
-    }
-
-    /**
-     * 自定义的请求类型
-     * @param string $url
-     * @param string $method
-     * @param mixed $data
-     * @param array $headers
-     * @return $this
-     */
-    private function custom($url = '', $method = 'PUT', $data, $headers = [])
-    {
-        if (is_array($data)) {
-            $data = json_encode($data);
-        }
-
-        $this->setContentType('json');
-        return $this->request($url, $method, $data, $headers);
-    }
-
-    /**
-     * 设置content-type类型
-     * @param string $type (raw,json,form-data)
-     * @return $this
-     */
-    public function setContentType($type = 'raw')
-    {
-        /**
-         * form_data = multipart/form-data
-         * raw = text/plain
-         *
-         * x-www-form-urlencoded = application/x-www-form-urlencoded
-         * json = application/json
-         * xml = application/xml
-         *
-         */
-        if (!$this->isSetContentType) {
-            if ($type == 'form-data') {
-                $contentType = 'multipart/form-data';
-            } elseif (in_array($type, ['json', 'xml', 'x-www-form-urlencoded'])) {
-                $contentType = 'application/' . $type;
-            } else {
-                $contentType = 'text/plain';
-            }
-
-            $this->appendHeaders([
-                'Content-type: ' . $contentType,
-            ]);
-
-            $this->isSetContentType = true;
-        }
-
-        return $this;
     }
 
     public function request($url, $method = 'GET', $data, $headers = [])
@@ -359,52 +304,44 @@ class HttpClient
         return $this;
     }
 
+    /**
+     * 设置content-type类型
+     * @param string $type (raw,json,form-data)
+     * @return $this
+     */
+    public function setContentType($type = 'raw')
+    {
+        /**
+         * form_data = multipart/form-data
+         * raw = text/plain
+         *
+         * x-www-form-urlencoded = application/x-www-form-urlencoded
+         * json = application/json
+         * xml = application/xml
+         *
+         */
+        if (!$this->isSetContentType) {
+            if ($type == 'form-data') {
+                $contentType = 'multipart/form-data';
+            } elseif (in_array($type, ['json', 'xml', 'x-www-form-urlencoded'])) {
+                $contentType = 'application/' . $type;
+            } else {
+                $contentType = 'text/plain';
+            }
+
+            $this->appendHeaders([
+                'Content-type: ' . $contentType,
+            ]);
+
+            $this->isSetContentType = true;
+        }
+
+        return $this;
+    }
+
     public function json()
     {
         return @json_decode($this->body, true);
-    }
-
-    /**
-     * 追加header数据
-     * @param array $headers
-     */
-    protected function appendHeaders($headers = [])
-    {
-        foreach ($headers as $header) {
-            //去重，并移除key
-            $this->request['headers'][] = $header;
-        }
-
-        //去重，并移除key
-        $this->request['headers'] = array_unique(array_values($this->request['headers']));
-    }
-
-    /**
-     * 解析请求的header
-     * @param $headers
-     */
-    protected function parseHeaders($headers)
-    {
-        $parseHeaders = [];
-
-        //字符串先转换为数组(一般由浏览器复制而来)
-        if (is_string($headers)) {
-            $headers = array_map(function ($data) {
-                return trim($data);
-            }, explode("\n", $headers));
-        }
-
-        //数组，这里分两种情况
-        //将所有header转换为curl能识别的格式
-        foreach ($headers as $key => $value) {
-            if (is_string($key)) {
-                $parseHeaders[] = $key . ':' . $value;
-            } else {
-                $parseHeaders[] = $value;
-            }
-        }
-
-        $this->appendHeaders($parseHeaders);
     }
 
     /**
@@ -512,6 +449,67 @@ class HttpClient
         return $str;
     }
 
+    /**
+     * 追加header数据
+     * @param array $headers
+     */
+    protected function appendHeaders($headers = [])
+    {
+        foreach ($headers as $header) {
+            //去重，并移除key
+            $this->request['headers'][] = $header;
+        }
+
+        //去重，并移除key
+        $this->request['headers'] = array_unique(array_values($this->request['headers']));
+    }
+
+    /**
+     * 解析请求的header
+     * @param $headers
+     */
+    protected function parseHeaders($headers)
+    {
+        $parseHeaders = [];
+
+        //字符串先转换为数组(一般由浏览器复制而来)
+        if (is_string($headers)) {
+            $headers = array_map(function ($data) {
+                return trim($data);
+            }, explode("\n", $headers));
+        }
+
+        //数组，这里分两种情况
+        //将所有header转换为curl能识别的格式
+        foreach ($headers as $key => $value) {
+            if (is_string($key)) {
+                $parseHeaders[] = $key . ':' . $value;
+            } else {
+                $parseHeaders[] = $value;
+            }
+        }
+
+        $this->appendHeaders($parseHeaders);
+    }
+
+
+    /**
+     * 自定义的请求类型
+     * @param string $url
+     * @param string $method
+     * @param mixed $data
+     * @param array $headers
+     * @return $this
+     */
+    private function custom($url = '', $method = 'PUT', $data, $headers = [])
+    {
+        if (is_array($data)) {
+            $data = json_encode($data);
+        }
+
+        $this->setContentType('json');
+        return $this->request($url, $method, $data, $headers);
+    }
     /**
      * 是否为curl错误
      *
