@@ -22,7 +22,6 @@ if (!$_COOKIE['cookie']) {
 //header("HTTP/1.0 404 Not Found");
 //header("HTTP/1.0 502 Bad Gateway");
 
-
 $data = [
     'method'  => $_SERVER['REQUEST_METHOD'],
     'headers' => getAllHeaders(),

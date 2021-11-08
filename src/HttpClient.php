@@ -7,6 +7,10 @@ namespace Webguosai;
  *
  * @package Webguosai
  *
+ * @method put(string $url, string|array $data, string|array $headers)
+ * @method delete(string $url, string|array $data, string|array $headers)
+ * @method head(string $url, string|array $data, string|array $headers)
+ * @method options(string $url, string|array $data, string|array $headers)
  */
 class HttpClient
 {
@@ -187,7 +191,7 @@ class HttpClient
         /** 拼接url中的get参数 **/
         if (!empty($data)) {
             if (is_string($data)) {
-                parse_str($data,$data);
+                parse_str($data, $data);
             }
 
             if (strpos($url, '?') === false) {
@@ -216,24 +220,22 @@ class HttpClient
         return $this->request($url, 'POST', $data, $headers);
     }
 
-    public function put($url = '', $data, $headers = [])
+    public function __call($name, $args)
     {
-        return $this->custom($url, 'PUT', $data, $headers);
-    }
+        if (in_array($name, ['put', 'delete', 'head', 'options'])) {
+            $url     = $args[0];
+            $method  = strtoupper($name);
+            $data    = $args[1];
+            $headers = $args[2];
 
-    public function delete($url = '', $data, $headers = [])
-    {
-        return $this->custom($url, 'DELETE', $data, $headers);
-    }
+            if (is_array($data)) {
+                $data = json_encode($data);
+            }
 
-    public function head($url = '', $data, $headers = [])
-    {
-        return $this->custom($url, 'HEAD', $data, $headers);
-    }
-
-    public function options($url = '', $data, $headers = [])
-    {
-        return $this->custom($url, 'OPTIONS', $data, $headers);
+            $this->setContentType('json');
+            return $this->request($url, $method, $data, $headers);
+        }
+        return $this;
     }
 
     public function request($url = '', $method = 'GET', $data, $headers = [])
@@ -503,23 +505,6 @@ class HttpClient
         $this->appendHeaders($parseHeaders);
     }
 
-    /**
-     * 自定义的请求类型
-     * @param string $url
-     * @param string $method
-     * @param mixed $data
-     * @param array $headers
-     * @return $this
-     */
-    private function custom($url = '', $method = 'PUT', $data, $headers = [])
-    {
-        if (is_array($data)) {
-            $data = json_encode($data);
-        }
-
-        $this->setContentType('json');
-        return $this->request($url, $method, $data, $headers);
-    }
     /**
      * 是否为curl错误
      *

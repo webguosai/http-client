@@ -37,7 +37,7 @@ Connection: keep-alive';
 $headers3 = "Accept-Language: zh-CN,zh;q=0.9\nCache-Control: max-age=0\nConnection: keep-alive";
 
 //$response = $http->get($url, ['get'=>'111'], $headers);
-$response = $http->get($url, 'get=111&get2=222', $headers);
+//$response = $http->get($url, 'get=111&get2=222', $headers);
 
 //$response = $http->post($url, ['post'=>'111'], $headers);
 //$response = $http->post($url, '{"post":"222"}', $headers);
@@ -46,6 +46,7 @@ $response = $http->get($url, 'get=111&get2=222', $headers);
 
 //$response = $http->put($url, ['put' => '111'], $headers);
 //$response = $http->put($url, '{"put":"111"}', $headers);
+$response = $http->put($url, '{"put":"111"}', $headers);
 
 //$response = $http->delete($url, ['delete' => '111'], $headers);
 //$response = $http->delete($url, '{"delete":"111"}', $headers);
