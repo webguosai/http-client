@@ -82,6 +82,7 @@ $http    = new \Webguosai\HttpClient($options);
 $response = $http->get('http://www.baidu.com');
 if ($response->ok()) {
     var_dump($response->body);
+    //var_dump($response->json());
 } else {
     var_dump($response->getErrorMsg());
 }

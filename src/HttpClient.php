@@ -10,7 +10,7 @@ namespace Webguosai;
  */
 class HttpClient
 {
-    private $version = '2.0.1';
+    private $version = '2.0.2';
 
     /** 请求 **/
     public $request = [
@@ -30,14 +30,14 @@ class HttpClient
     /** 配置 **/
     public $options = [
         //超时
-        'timeout'     => 3,
+        'timeout'       => 3,
 
         //代理ip池
-        'proxyIps'    => [],
+        'proxyIps'      => [],
 
         //允许重定向及重定向次数
-        'redirects'   => false,
-        'redirectMax' => 5,
+        'redirects'     => false,
+        'redirectMax'   => 5,
 
         //保存cookie的文件路径
         'cookieJarFile' => '',
@@ -182,8 +182,20 @@ class HttpClient
         $this->options = array_merge($this->options, $options);
     }
 
-    public function get($url, $data = [], $headers = [])
+    public function get($url, $data, $headers = [])
     {
+        /** 拼接url中的get参数 **/
+        if (!empty($data)) {
+            if (is_string($data)) {
+                parse_str($data,$data);
+            }
+
+            if (strpos($url, '?') === false) {
+                $url .= '?' . http_build_query($data);
+            } else {
+                $url .= '&' . http_build_query($data);
+            }
+        }
         return $this->request($url, 'GET', $data, $headers);
     }
 

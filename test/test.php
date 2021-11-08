@@ -15,14 +15,8 @@ $options = [
     //'cookieJarFile' => 'D:\www\test\http-client\example\cookie.txt',
 ];
 $http    = new \Webguosai\HttpClient($options);
-$response = $http->get('http://www.baidu.com');
-if ($response->ok()) {
-    dump($response->body);
-} else {
-    dump($response->getErrorMsg());
-}
 
-$url = 'http://test.com/test/http-client/example/test.php?a=1';
+$url = 'http://test.com/test/http-client/test/server.php?a=1';
 //$url = 'http://127.0.0.1:10453/think';
 //$url = 'http://waophp.com/api/test';
 //$url = 'https://www.qq.com/';
@@ -42,7 +36,8 @@ Connection: keep-alive';
 //纯字符串(\n)
 $headers3 = "Accept-Language: zh-CN,zh;q=0.9\nCache-Control: max-age=0\nConnection: keep-alive";
 
-$response = $http->get($url, ['get'=>'111'], $headers);
+//$response = $http->get($url, ['get'=>'111'], $headers);
+$response = $http->get($url, 'get=111&get2=222', $headers);
 
 //$response = $http->post($url, ['post'=>'111'], $headers);
 //$response = $http->post($url, '{"post":"222"}', $headers);
