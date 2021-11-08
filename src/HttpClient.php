@@ -106,7 +106,7 @@ class HttpClient
     ];
 
     //curl错误列表
-    protected $curlErrorList = [
+    private $curlErrorList = [
         0  => '正常访问',
         1  => '错误的协议',
         2  => '初始化代码失败',
