@@ -182,7 +182,7 @@ class HttpClient
         $this->options = array_merge($this->options, $options);
     }
 
-    public function get($url, $data, $headers = [])
+    public function get($url = '', $data, $headers = [])
     {
         /** 拼接url中的get参数 **/
         if (!empty($data)) {
@@ -199,7 +199,7 @@ class HttpClient
         return $this->request($url, 'GET', $data, $headers);
     }
 
-    public function post($url, $data, $headers = [])
+    public function post($url = '', $data, $headers = [])
     {
         if (is_string($data)) {
             if (!is_null(json_decode($data))) {
@@ -236,7 +236,7 @@ class HttpClient
         return $this->custom($url, 'OPTIONS', $data, $headers);
     }
 
-    public function request($url, $method = 'GET', $data, $headers = [])
+    public function request($url = '', $method = 'GET', $data, $headers = [])
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -447,12 +447,11 @@ class HttpClient
     /**
      * 自动转码
      *
-     * @access     public
      * @param string $str 要转码的内容
      * @param string $charset 转码后的编码
-     * @return     string
+     * @return string
      */
-    protected function autoCharset($str, $charset = 'UTF-8')
+    protected function autoCharset($str = '', $charset = 'UTF-8')
     {
         $mb_charset = mb_detect_encoding($str, array('UTF-8', 'GBK', 'LATIN1', 'BIG5', 'ISO-8859-1'));
         if (strtolower($mb_charset) != strtolower($charset)) {
@@ -503,7 +502,6 @@ class HttpClient
 
         $this->appendHeaders($parseHeaders);
     }
-
 
     /**
      * 自定义的请求类型
