@@ -186,7 +186,7 @@ class HttpClient
         $this->options = array_merge($this->options, $options);
     }
 
-    public function get($url = '', $data, $headers = [])
+    public function get($url = '', $data = [], $headers = [])
     {
         /** 拼接url中的get参数 **/
         if (!empty($data)) {
