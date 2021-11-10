@@ -203,7 +203,7 @@ class HttpClient
         return $this->request($url, 'GET', $data, $headers);
     }
 
-    public function post($url = '', $data, $headers = [])
+    public function post($url = '', $data = [], $headers = [])
     {
         if (is_string($data)) {
             if (!is_null(json_decode($data))) {
@@ -238,7 +238,7 @@ class HttpClient
         return $this;
     }
 
-    public function request($url = '', $method = 'GET', $data, $headers = [])
+    public function request($url = '', $method = 'GET', $data = [], $headers = [])
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
