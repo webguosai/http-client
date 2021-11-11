@@ -9,6 +9,7 @@ require_once '../src/HttpClient.php';
 $options = [
     'timeout'   => 10,
     'redirects' => true,
+    'redirectMax' => 10,
     'proxyIps'    => [
         //'163.125.114.179:8088'
     ],
@@ -36,7 +37,7 @@ Connection: keep-alive';
 //纯字符串(\n)
 $headers3 = "Accept-Language: zh-CN,zh;q=0.9\nCache-Control: max-age=0\nConnection: keep-alive";
 
-//$response = $http->get($url, ['get'=>'111'], $headers);
+$response = $http->get($url, ['get'=>'111'], $headers);
 //$response = $http->get($url, 'get=111&get2=222', $headers);
 
 //$response = $http->post($url, ['post'=>'111'], $headers);
@@ -46,7 +47,7 @@ $headers3 = "Accept-Language: zh-CN,zh;q=0.9\nCache-Control: max-age=0\nConnecti
 
 //$response = $http->put($url, ['put' => '111'], $headers);
 //$response = $http->put($url, '{"put":"111"}', $headers);
-$response = $http->put($url, '{"put":"111"}', $headers);
+//$response = $http->put($url, '{"put":"111"}', $headers);
 
 //$response = $http->delete($url, ['delete' => '111'], $headers);
 //$response = $http->delete($url, '{"delete":"111"}', $headers);
@@ -65,16 +66,16 @@ $response = $http->put($url, '{"put":"111"}', $headers);
  * raw = text/plain
  */
 
-dump($response->ok());//http=200返回真
-dump($response->request); //请求
-dump($response->headers); //响应头
-dump($response->body); //响应body
-dump($response->httpStatus); //http状态码
+//dump($response->ok());//http=200返回真
+//dump($response->request); //请求
+//dump($response->headers); //响应头
+//dump($response->body); //响应body
+//dump($response->httpStatus); //http状态码
 dump($response->info); //其它信息
-dump($response->getHtml()); //获取html
-dump($response->json()); //json
-dump($response->getErrorMsg()); //错误信息
-dump($response->getChatset()); //编码
+//dump($response->getHtml()); //获取html
+//dump($response->json()); //json
+//dump($response->getErrorMsg()); //错误信息
+//dump($response->getChatset()); //编码
 
 
 

@@ -3,15 +3,14 @@
 //报告E_NOTICE之外的所有错误(可解决变量不存在导致的错误，如GET、POST数据)
 error_reporting(E_ALL & ~E_NOTICE);
 
-
 /* 跳转的测试 */
-//$a = empty($_GET['a']) ? 0 : intval($_GET['a']);
-//if ($a <= 5) {
-//    $url = "?a=".($a+1);
-//    header("Location: {$url}");
-//    echo '要跳转到'.$url;
-//    exit;
-//}
+$a = empty($_GET['a']) ? 0 : intval($_GET['a']);
+if ($a <= 5) {
+    $url = "?a=".($a+1);
+    header("Location: {$url}");
+    echo '要跳转到'.$url;
+    exit;
+}
 
 /** cookie设置 **/
 if (!$_COOKIE['cookie']) {
