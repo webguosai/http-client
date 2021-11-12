@@ -66,11 +66,13 @@ $response->headers; //响应头
 $response->body; //响应body
 $response->httpStatus; //http状态码
 $response->info; //其它信息
-$response->ok();//http=200返回真
+$response->info['url'];//最终请求的地址
 $response->getHtml(); //获取html
-$response->json(); //json
-$response->getErrorMsg(); //错误信息
 $response->getChatset(); //编码
+$response->json(); //json
+$response->xml(); //xml
+$response->ok();//http=200返回真
+$response->getErrorMsg(); //错误信息
 ```
 
 ## 实操

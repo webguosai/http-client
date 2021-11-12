@@ -73,7 +73,7 @@ $response = $http->get($url, ['get'=>'111'], $headers);
 dump($response->body); //响应body
 //dump($response->httpStatus); //http状态码
 dump($response->info); //其它信息
-//dump($response->info['url']);//最终定位到的网址
+//dump($response->info['url']);//最终请求的地址
 //dump($response->getHtml()); //获取html
 //dump($response->getChatset()); //编码
 dump($response->json()); //json
