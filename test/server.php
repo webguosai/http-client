@@ -37,11 +37,11 @@ $data = [
 ];
 
 //output json
-//header('Content-type: application/json; charset=utf-8');
-//echo json_encode($data);
+header('Content-type: application/json; charset=utf-8');
+echo json_encode($data);
 
 //output xml
-echo <<<EOF
+/*echo <<<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <document>
     <code>0</code>
@@ -57,7 +57,7 @@ echo <<<EOF
         <publisher>O'Reilly</publisher>
     </data>
 </document>
-EOF;
+EOF;*/
 
 
 
