@@ -4,13 +4,13 @@
 error_reporting(E_ALL & ~E_NOTICE);
 
 /* 跳转的测试 */
-$a = empty($_GET['a']) ? 0 : intval($_GET['a']);
-if ($a <= 5) {
-    $url = "?a=".($a+1);
-    header("Location: {$url}");
-    echo '要跳转到'.$url;
-    exit;
-}
+//$a = empty($_GET['a']) ? 0 : intval($_GET['a']);
+//if ($a <= 5) {
+//    $url = "?a=".($a+1);
+//    header("Location: {$url}");
+//    echo '要跳转到'.$url;
+//    exit;
+//}
 
 /** cookie设置 **/
 if (!$_COOKIE['cookie']) {
@@ -36,8 +36,22 @@ $data = [
     'server'  => $_SERVER,
 ];
 
-header('Content-type: application/json; charset=utf-8');
-echo json_encode($data);
+//output json
+//header('Content-type: application/json; charset=utf-8');
+//echo json_encode($data);
+
+//output xml
+echo <<<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<note>
+    <code>0</code>
+    <message>ok</message>
+    <data>
+        
+    </data>
+</note>
+EOF;
+
 
 
 

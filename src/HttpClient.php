@@ -14,7 +14,7 @@ namespace Webguosai;
  */
 class HttpClient
 {
-    private $version = '2.0.2';
+    private $version = '2.1.0';
 
     /** 请求 **/
     public $request = [
@@ -358,6 +358,12 @@ class HttpClient
         return @json_decode($this->body, true);
     }
 
+    public function xml()
+    {
+        libxml_disable_entity_loader(true);
+        $xml = simplexml_load_string($this->body, 'SimpleXMLElement', LIBXML_NOCDATA);
+        return json_decode(json_encode($xml),TRUE);
+    }
     /**
      * curl没有错误、且http状态返回200表示成功
      * @return bool
