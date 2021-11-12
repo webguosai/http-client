@@ -68,6 +68,7 @@ $response->request; //请求
 $response->headers; //响应头
 $response->body; //响应body
 $response->httpStatus; //http状态码
+$response->contentType; //内容类型
 $response->info; //其它信息
 $response->info['url'];//最终请求的地址
 $response->getHtml(); //获取html

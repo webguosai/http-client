@@ -30,6 +30,7 @@ class HttpClient
     public $httpStatus; //http状态
     public $errorCode = 0; //curl错误码
     public $contentType; //文档类型
+    public $info;//所有信息
 
     /** 配置 **/
     public $options = [
@@ -319,6 +320,7 @@ class HttpClient
         $errorCode   = curl_errno($ch);
         $httpCode    = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         $contentType = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        $contentType = strtolower(explode(';', preg_replace("#\s#", '', $contentType))[0]);
         $info        = curl_getinfo($ch);
 
         //获取响应的header头、body数据
