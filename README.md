@@ -34,7 +34,7 @@ $options = [
 
     //重定向、及最多重定向跳转次数
     'redirects'   => false,
-    'redirectMax' => 5,
+    'maxRedirect' => 5,
     
     //cookie自动保存路径
     'cookieJarFile' => 'cookie.txt',

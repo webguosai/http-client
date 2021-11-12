@@ -41,7 +41,7 @@ class HttpClient
 
         //允许重定向及重定向次数
         'redirects'     => false,
-        'redirectMax'   => 5,
+        'maxRedirect'   => 5,
 
         //保存cookie的文件路径
         'cookieJarFile' => '',
@@ -261,7 +261,7 @@ class HttpClient
             curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
             //设置请求最多重定向的次数
-            curl_setopt($ch, CURLOPT_MAXREDIRS, $this->options['redirectMax']);
+            curl_setopt($ch, CURLOPT_MAXREDIRS, $this->options['maxRedirect']);
         }
 
         //cookie

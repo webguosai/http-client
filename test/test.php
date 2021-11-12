@@ -9,7 +9,7 @@ require_once '../src/HttpClient.php';
 $options = [
     'timeout'   => 10,
     'redirects' => true,
-    'redirectMax' => 10,
+    'maxRedirect' => 10,
     'proxyIps'    => [
         //'163.125.114.179:8088'
     ],
@@ -72,13 +72,15 @@ $response = $http->get($url, ['get'=>'111'], $headers);
 //dump($response->headers); //响应头
 dump($response->body); //响应body
 //dump($response->httpStatus); //http状态码
-//dump($response->info); //其它信息
+dump($response->info); //其它信息
+//dump($response->info['url']);//最终定位到的网址
 //dump($response->getHtml()); //获取html
 //dump($response->getChatset()); //编码
 dump($response->json()); //json
 //dump($response->xml()); //xml
 dump($response->ok());//http=200返回真
 dump($response->getErrorMsg()); //错误信息
+
 
 
 
