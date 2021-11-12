@@ -43,13 +43,20 @@ $data = [
 //output xml
 echo <<<EOF
 <?xml version="1.0" encoding="UTF-8"?>
-<note>
+<document>
     <code>0</code>
     <message>ok</message>
     <data>
-        
+        <author>Jack Herrington</author>
+        <title>PHP Hacks</title>
+        <publisher>O'Reilly</publisher>
     </data>
-</note>
+    <data>
+        <author>Jack Herrington</author>
+        <title>Podcasting Hacks</title>
+        <publisher>O'Reilly</publisher>
+    </data>
+</document>
 EOF;
 
 

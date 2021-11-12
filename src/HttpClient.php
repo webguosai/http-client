@@ -45,6 +45,11 @@ class HttpClient
 
         //保存cookie的文件路径
         'cookieJarFile' => '',
+
+        //ca证书路径
+        //下载：https://curl.se/ca/cacert.pem
+        //'caFile' => __DIR__.'/../cacert/cacert.pem',
+        'caFile'        => '',
     ];
 
     //是否设置过content-type头
@@ -186,7 +191,7 @@ class HttpClient
         $this->options = array_merge($this->options, $options);
     }
 
-    public function get($url = '', $data = [], $headers = [])
+    public function get(string $url, $data = [], $headers = [])
     {
         /** 拼接url中的get参数 **/
         if (!empty($data)) {
@@ -200,10 +205,11 @@ class HttpClient
                 $url .= '&' . http_build_query($data);
             }
         }
+
         return $this->request($url, 'GET', $data, $headers);
     }
 
-    public function post($url = '', $data = [], $headers = [])
+    public function post(string $url, $data = [], $headers = [])
     {
         if (is_string($data)) {
             if (!is_null(json_decode($data))) {
@@ -224,9 +230,9 @@ class HttpClient
     {
         if (in_array($name, ['put', 'delete', 'head', 'options'])) {
             $url     = $args[0];
-            $method  = strtoupper($name);
-            $data    = $args[1];
-            $headers = $args[2];
+            $method  = $name;
+            $data    = empty($args[1]) ? [] : $args[1];
+            $headers = empty($args[2]) ? [] : $args[2];
 
             if (is_array($data)) {
                 $data = json_encode($data);
@@ -238,7 +244,7 @@ class HttpClient
         return $this;
     }
 
-    public function request($url = '', $method = 'GET', $data = [], $headers = [])
+    public function request(string $url, $method = 'GET', $data = [], $headers = [])
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -274,6 +280,7 @@ class HttpClient
         }
 
         //设置请求方式
+        $method = strtoupper($method);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $method);
 
         if ($method == 'HEAD') {
@@ -286,8 +293,20 @@ class HttpClient
         }
 
         //支持https
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        if (file_exists($this->options['caFile'])) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+            curl_setopt($ch, CURLOPT_CAINFO, $this->options['caFile']);
+
+            //证书
+//            curl_setopt($ch, CURLOPT_SSLCERTTYPE, 'PEM');
+//            curl_setopt($ch, CURLOPT_SSLCERT, $this->options['caFile']);
+            //秘钥
+            //curl_setopt($ch, CURLOPT_SSLKEYTYPE, 'PEM');
+            //curl_setopt($ch, CURLOPT_SSLKEY, '');
+        } else {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        }
 
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);//不直接输出响应数据
         curl_setopt($ch, CURLOPT_ENCODING, '');//编码
@@ -362,8 +381,9 @@ class HttpClient
     {
         libxml_disable_entity_loader(true);
         $xml = simplexml_load_string($this->body, 'SimpleXMLElement', LIBXML_NOCDATA);
-        return json_decode(json_encode($xml),TRUE);
+        return json_decode(json_encode($xml), TRUE);
     }
+
     /**
      * curl没有错误、且http状态返回200表示成功
      * @return bool
