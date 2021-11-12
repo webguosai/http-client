@@ -38,6 +38,9 @@ $options = [
     
     //cookie自动保存路径
     'cookieJarFile' => 'cookie.txt',
+
+    //ca证书路径
+    'caFile'        => __DIR__.'/cacert/cacert.pem',
 ];
 $http = new \Webguosai\HttpClient($options);
 ```
