@@ -102,9 +102,9 @@ $headers = [
 ];
 
 //纯字符串 (一般为从浏览器复制)
-$headers = 'Accept-Language: zh-CN,zh;q=0.9
-Cache-Control: max-age=0
-Connection: keep-alive';
+$headers = 'User-Agent: chrome
+Referer: https://www.x.com
+Cookie: cookie=6666666';
 
 $response = $http->post($url, $data, $headers);
 ```
