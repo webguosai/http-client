@@ -79,6 +79,36 @@ $response->ok();//http=200返回真
 $response->getErrorMsg(); //错误信息
 ```
 
+### data 传值方式
+```php
+// multipart/form-data
+$data = ['data' => '111', 'data2' => '222'];
+
+// application/x-www-form-urlencoded
+$data = http_build_query($data); 
+
+// application/json
+$data = json_encode($data); 
+
+$response = $http->post($url, $data);
+```
+
+### headers 传值方式
+```php
+//数组传递 
+$headers = [
+    'User-Agent: chrome',
+    'User-Agent' => 'chrome',
+];
+
+//纯字符串 (一般为从浏览器复制)
+$headers = 'Accept-Language: zh-CN,zh;q=0.9
+Cache-Control: max-age=0
+Connection: keep-alive';
+
+$response = $http->post($url, $data, $headers);
+```
+
 ## 实操
 ```php
 $options = [

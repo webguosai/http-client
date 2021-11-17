@@ -45,7 +45,7 @@ $response = $http->get($url, ['get'=>'111'], $headers);
 //$response = $http->post($url, ['post'=>'111'], $headers);
 //$response = $http->post($url, '{"post":"222"}', $headers);
 //$response = $http->post($url, 'post1=111&post2=222', $headers);
-//$response = $http->setContentType('text')->post($url, '{"post":"222"}', $headers);
+//$response = $http->post($url, '{"post":"222"}', $headers);
 
 //$response = $http->put($url, ['put' => '111'], $headers);
 //$response = $http->put($url, '{"put":"111"}', $headers);
