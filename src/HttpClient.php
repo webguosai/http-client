@@ -339,11 +339,19 @@ class HttpClient
         return $this;
     }
 
+    /**
+     * 解析json返回数组
+     * @return mixed
+     */
     public function json()
     {
         return @json_decode($this->body, true);
     }
 
+    /**
+     * 解析xml返回数组
+     * @return mixed
+     */
     public function xml()
     {
         libxml_disable_entity_loader(true);
@@ -391,7 +399,11 @@ class HttpClient
         return $charset;
     }
 
-    //获取转码后的html
+    /**
+     * 获取转码后的html
+     * @param string $outCharset 编码
+     * @return string
+     */
     public function getHtml($outCharset = 'utf-8')
     {
         //请求的内容编码
