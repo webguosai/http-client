@@ -18,6 +18,8 @@ $options = [
 $http    = new \Webguosai\HttpClient($options);
 
 $url = 'http://test.com/test/http-client/test/server.php?a=1';
+$url = 'http://test.com/test/task/test/charset/bom/';
+//$url = 'http://test.com/test/task/test/charset/gbk/';
 //$url = 'http://127.0.0.1:10453/think';
 //$url = 'http://waophp.com/api/test';
 //$url = 'https://www.qq.com/';
@@ -69,19 +71,18 @@ $response = $http->get($url, ['get'=>'111'], $headers);
  */
 
 //dump($response->request); //请求
-dump($response->headers); //响应头
-//dump($response->body); //响应body
+//dump($response->headers); //响应头
+dump($response->body); //响应body
 //dump($response->httpStatus); //http状态码
-dump($response->contentType); //内容类型
-dump($response->info); //其它信息
+//dump($response->contentType); //内容类型
+//dump($response->info); //其它信息
 //dump($response->info['url']);//最终请求的地址
-//dump($response->getHtml()); //获取html
+dump($response->getHtml()); //获取html
 //dump($response->getChatset()); //编码
 //dump($response->json()); //json
 //dump($response->xml()); //xml
 //dump($response->ok());//http=200返回真
 //dump($response->getErrorMsg()); //错误信息
-
 
 
 

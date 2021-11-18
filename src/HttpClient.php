@@ -329,47 +329,12 @@ class HttpClient
         $body       = substr($response, $headerSize, strlen($response));
         //list($header, $body) = explode("\r\n\r\n", response, 2);
 
-        $this->body        = $body;
+        $this->body        = $this->clearBom($body);
         $this->httpStatus  = $httpCode;
         $this->errorCode   = $errorCode;
         $this->contentType = $contentType;
         $this->headers     = $headers;
         $this->info        = $info;
-
-        return $this;
-    }
-
-    /**
-     * 设置content-type类型
-     * @param string $type (raw,json,form-data)
-     * @return $this
-     */
-    public function setContentType($type = 'raw')
-    {
-        /**
-         * form_data = multipart/form-data
-         * raw = text/plain
-         *
-         * x-www-form-urlencoded = application/x-www-form-urlencoded
-         * json = application/json
-         * xml = application/xml
-         *
-         */
-        if (!$this->isSetContentType) {
-            if ($type == 'form-data') {
-                $contentType = 'multipart/form-data';
-            } elseif (in_array($type, ['json', 'xml', 'x-www-form-urlencoded'])) {
-                $contentType = 'application/' . $type;
-            } else {
-                $contentType = 'text/plain';
-            }
-
-            $this->appendHeaders([
-                'Content-type: ' . $contentType,
-            ]);
-
-            $this->isSetContentType = true;
-        }
 
         return $this;
     }
@@ -474,6 +439,42 @@ class HttpClient
         return '';
     }
 
+
+    /**
+     * 设置content-type类型
+     * @param string $type (raw,json,form-data)
+     * @return $this
+     */
+    protected function setContentType($type = 'raw')
+    {
+        /**
+         * form_data = multipart/form-data
+         * raw = text/plain
+         *
+         * x-www-form-urlencoded = application/x-www-form-urlencoded
+         * json = application/json
+         * xml = application/xml
+         *
+         */
+        if (!$this->isSetContentType) {
+            if ($type == 'form-data') {
+                $contentType = 'multipart/form-data';
+            } elseif (in_array($type, ['json', 'xml', 'x-www-form-urlencoded'])) {
+                $contentType = 'application/' . $type;
+            } else {
+                $contentType = 'text/plain';
+            }
+
+            $this->appendHeaders([
+                'Content-type: ' . $contentType,
+            ]);
+
+            $this->isSetContentType = true;
+        }
+
+        return $this;
+    }
+
     /**
      * 自动转码
      *
@@ -531,6 +532,26 @@ class HttpClient
         }
 
         $this->appendHeaders($parseHeaders);
+    }
+
+    /**
+     * 清除BOM头
+     *   一般都是 utf-8 包含签名
+     * @param string $html
+     * @return string
+     */
+    protected function clearBom($html = '')
+    {
+        $bom = array(
+            ord(substr($html, 0, 1)),
+            ord(substr($html, 1, 1)),
+            ord(substr($html, 2, 1))
+        );
+
+        if ($bom[0] == 239 && $bom[1] == 187 && $bom[2] == 191) {
+            $html = substr($html, 3);
+        }
+        return $html;
     }
 
     /**
