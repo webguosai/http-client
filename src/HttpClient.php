@@ -547,8 +547,7 @@ class HttpClient
     }
 
     /**
-     * 清除BOM头
-     *   一般都是 utf-8 包含签名
+     * 清除BOM头 (清除body头部中的utf-8签名)
      * @param string $html
      * @return string
      */
