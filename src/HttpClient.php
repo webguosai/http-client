@@ -433,6 +433,26 @@ class HttpClient
     }
 
     /**
+     * 判断是否为图片
+     * @return bool
+     */
+    public function isImg()
+    {
+        //从文档中判断
+        if (stripos($this->contentType, 'image/') !== false) {
+            return true;
+        }
+
+        //从内容的前两个字节判断
+        $strInfo  = @unpack("C2chars", substr($this->body, 0, 2));
+        $typeCode = intval($strInfo['chars1'] . $strInfo['chars2']);
+        if ($typeCode == 255216 /*jpg*/ || $typeCode == 7173 /*gif*/ || $typeCode == 13780 /*png*/) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * 错误信息
      * @return string
      */
