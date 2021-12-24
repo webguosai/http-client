@@ -377,7 +377,7 @@ class HttpClient
         $headerRex = '#charset=([^ ;,\r\n]+)#i';
         $htmlRex   = '#<meta[^>]+charset=["\']*?([^ "\'>]+)[^>]*>#i';
 
-        if (preg_match($headerRex, $this->contentType, $mat)) {
+        if (preg_match($headerRex, $this->info['content_type'], $mat)) {
             //以header头的字符集优先
             $charset = trim($mat[1]);
         } elseif (preg_match($htmlRex, $this->body, $mat)) {
