@@ -16,7 +16,7 @@
 ## 安装
 
 ```Shell
-$ composer require webguosai/http-client -vvv
+composer require webguosai/http-client -vvv
 ```
 
 ## 使用
