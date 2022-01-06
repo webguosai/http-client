@@ -3,7 +3,7 @@
 //报告E_NOTICE之外的所有错误(可解决变量不存在导致的错误，如GET、POST数据)
 error_reporting(E_ALL & ~E_NOTICE);
 
-require_once './vendor/autoload.php';
+require_once '../vendor/autoload.php';
 require_once '../src/HttpClient.php';
 
 $options = [

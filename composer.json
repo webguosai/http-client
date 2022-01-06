@@ -16,7 +16,8 @@
         "php": ">=5.6",
         "ext-openssl": "*",
         "ext-json": "*",
-        "ext-curl": "*"
+        "ext-curl": "*",
+        "symfony/var-dumper": "^5.3"
     },
     "autoload": {
         "psr-4": {
