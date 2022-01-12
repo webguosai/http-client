@@ -207,9 +207,7 @@ class HttpClient
             }
         }
 
-        $data = [];
-
-        return $this->request($url, 'GET', $data, $headers);
+        return $this->request($url, 'GET', [], $headers);
     }
 
     public function post(string $url, $data = [], $headers = [])
