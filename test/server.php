@@ -63,15 +63,16 @@ EOF;*/
 
 
 
-
-function getAllHeaders()
-{
-    foreach ($_SERVER as $name => $value)
+if (!function_exists('getAllHeaders')) {
+    function getAllHeaders()
     {
-        if (substr($name, 0, 5) == 'HTTP_')
+        foreach ($_SERVER as $name => $value)
         {
-            $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            if (substr($name, 0, 5) == 'HTTP_')
+            {
+                $headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+            }
         }
+        return $headers;
     }
-    return $headers;
 }

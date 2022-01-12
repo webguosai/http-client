@@ -207,6 +207,8 @@ class HttpClient
             }
         }
 
+        $data = [];
+
         return $this->request($url, 'GET', $data, $headers);
     }
 

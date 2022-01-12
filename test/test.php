@@ -6,6 +6,7 @@ require_once '../src/HttpClient.php';
 //报告E_NOTICE之外的所有错误(可解决变量不存在导致的错误，如GET、POST数据)
 error_reporting(E_ALL & ~E_NOTICE);
 
+
 $options = [
     'timeout'   => 10,
     'redirects' => true,
@@ -18,7 +19,7 @@ $options = [
 $http    = new \Webguosai\HttpClient($options);
 
 $url = 'http://test.com/test/http-client/test/server.php?a=1';
-$url = 'http://test.com/test/task/test/charset/bom/';
+//$url = 'http://test.com/test/task/test/charset/bom/';
 //$url = 'http://test.com/test/task/test/charset/gbk/';
 //$url = 'http://127.0.0.1:10453/think';
 //$url = 'http://waophp.com/api/test';
