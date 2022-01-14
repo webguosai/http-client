@@ -1,0 +1,137 @@
+<?php
+
+namespace Webguosai\Http;
+
+class Consts
+{
+    //curl错误列表
+    const CURL_ERRORS = [
+        0  => '正常访问',
+        1  => '错误的协议',
+        2  => '初始化代码失败',
+        3  => 'URL格式不正确',
+        4  => '请求协议错误',
+        5  => '无法解析代理',
+        6  => '无法解析主机地址',
+        7  => '无法连接到主机',
+        8  => '远程服务器不可用',
+        9  => '访问资源错误',
+        11 => 'FTP密码错误',
+        13 => '结果错误',
+        14 => 'FTP回应PASV命令',
+        15 => '内部故障',
+        17 => '设置传输模式为二进制',
+        18 => '文件传输短或大于预期',
+        19 => 'RETR命令传输完成',
+        21 => '命令成功完成',
+        22 => '返回正常',
+        23 => '数据写入失败',
+        25 => '无法启动上传',
+        26 => '回调错误',
+        27 => '内存分配请求失败',
+        28 => '访问超时',
+        30 => 'FTP端口错误',
+        31 => 'FTP错误',
+        33 => '不支持请求',
+        34 => '内部发生错误',
+        35 => 'SSL/TLS握手失败',
+        36 => '下载无法恢复',
+        37 => '文件权限错误',
+        38 => 'LDAP可没有约束力',
+        39 => 'LDAP搜索失败',
+        41 => '函数没有找到',
+        42 => '中止的回调',
+        43 => '内部错误',
+        45 => '接口错误',
+        47 => '过多的重定向',
+        48 => '无法识别选项',
+        49 => 'TELNET格式错误',
+        51 => '远程服务器的SSL证书',
+        52 => '服务器无返回内容',
+        53 => '加密引擎未找到',
+        54 => '设定默认SSL加密失败',
+        55 => '无法发送网络数据',
+        56 => '衰竭接收网络数据',
+        58 => '本地客户端证书',
+        59 => '无法使用密码',
+        60 => '凭证无法验证',
+        61 => '无法识别的传输编码',
+        62 => '无效的LDAP URL',
+        63 => '文件超过最大大小',
+        64 => 'FTP失败',
+        65 => '倒带操作失败',
+        66 => 'SSL引擎失败',
+        67 => '服务器拒绝登录',
+        68 => '未找到文件',
+        69 => '无权限',
+        70 => '超出服务器磁盘空间',
+        71 => '非法TFTP操作',
+        72 => '未知TFTP传输的ID',
+        73 => '文件已经存在',
+        74 => '错误TFTP服务器',
+        75 => '字符转换失败',
+        76 => '必须记录回调',
+        77 => 'CA证书权限',
+        78 => 'URL中引用资源不存在',
+        79 => '错误发生在SSH会话',
+        80 => '无法关闭SSL连接',
+        81 => '服务未准备',
+        82 => '无法载入CRL文件',
+        83 => '发行人检查失败',
+    ];
+
+    //http状态列表
+    const HTTP_STATUS = [
+        // Informational 1xx
+        100 => 'Continue',
+        101 => 'Switching Protocols',
+
+        // Success 2xx
+        200 => 'OK',
+        201 => 'Created',
+        202 => 'Accepted',
+        203 => 'Non-Authoritative Information',
+        204 => 'No Content',
+        205 => 'Reset Content',
+        206 => 'Partial Content',
+
+        // Redirection 3xx
+        300 => 'Multiple Choices',
+        301 => 'Moved Permanently',
+        302 => 'Found',  // 1.1
+        303 => 'See Other',
+        304 => 'Not Modified',
+        305 => 'Use Proxy',
+        // 306 is deprecated but reserved
+        307 => 'Temporary Redirect',
+
+        // Client Error 4xx
+        400 => 'Bad Request',
+        401 => 'Unauthorized',
+        402 => 'Payment Required',
+        403 => 'Forbidden',
+        404 => 'Not Found',
+        405 => 'Method Not Allowed',
+        406 => 'Not Acceptable',
+        407 => 'Proxy Authentication Required',
+        408 => 'Request Timeout',
+        409 => 'Conflict',
+        410 => 'Gone',
+        411 => 'Length Required',
+        412 => 'Precondition Failed',
+        413 => 'Request Entity Too Large',
+        414 => 'Request-URI Too Long',
+        415 => 'Unsupported Media Type',
+        416 => 'Requested Range Not Satisfiable',
+        417 => 'Expectation Failed',
+
+        // Server Error 5xx
+        500 => 'Internal Server Error',
+        501 => 'Not Implemented',
+        502 => 'Bad Gateway',
+        503 => 'Service Unavailable',
+        504 => 'Gateway Timeout',
+        505 => 'HTTP Version Not Supported',
+        509 => 'Bandwidth Limit Exceeded'
+    ];
+}
