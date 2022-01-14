@@ -272,13 +272,9 @@ class HttpClient
         }
 
         //自定义headers
-        if ($headers) {
+        $this->parseHeaders($headers);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->request['headers']);
 
-            //转换一下header数据
-            $this->parseHeaders($headers);
-
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $this->request['headers']);
-        }
 
         //设置请求方式
         $method = strtoupper($method);

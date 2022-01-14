@@ -1,11 +1,31 @@
 <?php
 
 require_once '../vendor/autoload.php';
-require_once '../src/HttpClient.php';
 
-//报告E_NOTICE之外的所有错误(可解决变量不存在导致的错误，如GET、POST数据)
-error_reporting(E_ALL & ~E_NOTICE);
+/**
+ * BUG
+ * 1、只new 一次之后，headers会把上次的参数也带入进来
+ * 2、data参数传入json格式后，只在第一次有效
+ */
+$client  = new \Webguosai\HttpClient([
+    'timeout' => 5,
+]);
 
+$url = 'http://test.com/test/http-client/test/server.php?a=1';
+$headers = 'baba:111';
+$response = $client->post($url, ['a' => 'aaa'], $headers);
+
+dump($response->request['headers']);
+
+
+$headers = [
+    'baba' => 222
+];
+$response = $client->post($url, json_encode(['a' => 'bbb']), $headers);
+dump($response->request['headers']);
+
+
+exit;
 
 $options = [
     'timeout'   => 10,
