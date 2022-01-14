@@ -18,10 +18,14 @@ class HttpClient
 {
     /** 请求 **/
     public $request = [
-        'headers' => [
-            //'User-Agent: guosai browser',
-        ],
+        'headers' => [],
         'proxyIp' => '',
+    ];
+
+    protected $initHeaders = [];
+    //自定义的header头
+    protected $customHeaders = [
+        'User-Agent: guosai browser',
     ];
 
     /** 响应 **/
@@ -53,13 +57,11 @@ class HttpClient
         'caFile'        => '',
     ];
 
-    //是否设置过content-type头
-    private $isSetContentType = false;
-
     public function __construct($options = [])
     {
         $this->options = array_merge($this->options, $options);
     }
+
 
     public function get(string $url, $data = [], $headers = [])
     {
@@ -141,9 +143,8 @@ class HttpClient
         }
 
         //自定义headers
-        $this->parseHeaders($headers);
+        $this->handleHeaders($headers);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $this->request['headers']);
-
 
         //设置请求方式
         $method = strtoupper($method);
@@ -352,21 +353,18 @@ class HttpClient
          * xml = application/xml
          *
          */
-        if (!$this->isSetContentType) {
-            if ($type == 'form-data') {
-                $contentType = 'multipart/form-data';
-            } elseif (in_array($type, ['json', 'xml', 'x-www-form-urlencoded'])) {
-                $contentType = 'application/' . $type;
-            } else {
-                $contentType = 'text/plain';
-            }
-
-            $this->appendHeaders([
-                'Content-type: ' . $contentType,
-            ]);
-
-            $this->isSetContentType = true;
+        if ($type == 'form-data') {
+            $contentType = 'multipart/form-data';
+        } elseif (in_array($type, ['json', 'xml', 'x-www-form-urlencoded'])) {
+            $contentType = 'application/' . $type;
+        } else {
+            $contentType = 'text/plain';
         }
+
+        $this->initHeaders([
+            'Content-type: ' . $contentType,
+        ]);
+
 
         return $this;
     }
@@ -387,19 +385,31 @@ class HttpClient
         return $str;
     }
 
-    /**
-     * 追加header数据
-     * @param array $headers
-     */
-    protected function appendHeaders($headers = [])
+    //处理headers
+    protected function handleHeaders($headers)
     {
-        foreach ($headers as $header) {
-            //去重，并移除key
+        // 解析填写的headers
+        $parseHeaders = $this->parseHeaders($headers);
+
+        $this->request['headers'] = [];
+        foreach ($this->initHeaders as $header) {
             $this->request['headers'][] = $header;
         }
 
-        //去重，并移除key
-        $this->request['headers'] = array_unique(array_values($this->request['headers']));
+        foreach ($parseHeaders as $header) {
+            $this->request['headers'][] = $header;
+        }
+
+    }
+
+    //初始化header,将默认的header和代码内部加入的header头合并
+    protected function initHeaders($headers)
+    {
+        $this->initHeaders = $this->customHeaders;
+
+        foreach ($headers as $header) {
+            $this->initHeaders[] = $header;
+        }
     }
 
     /**
@@ -427,7 +437,7 @@ class HttpClient
             }
         }
 
-        $this->appendHeaders($parseHeaders);
+        return $parseHeaders;
     }
 
     /**
