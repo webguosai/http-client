@@ -35,6 +35,7 @@ class HttpClient
     public $errorCode = 0; //curl错误码
     public $contentType; //文档类型
     public $info;//所有信息
+//    public $isUpload = false;
 
     /** 配置 **/
     public $options = [
@@ -153,6 +154,10 @@ class HttpClient
         if ($method == 'HEAD') {
             curl_setopt($ch, CURLOPT_NOBODY, true);
         }
+
+//        if ($this->isUpload) {
+//            curl_setopt($ch, CURLOPT_SAFE_UPLOAD, true);
+//        }
 
         //post
         if ($data) {

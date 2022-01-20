@@ -2,16 +2,7 @@
 
 require_once '../vendor/autoload.php';
 
-/**
- * BUG
- * 1、只new 一次之后，headers会把上次的参数也带入进来
- * 2、data参数传入json格式后，只在第一次有效
- *
- * 方案
- * 1.content-type和自定义的都放在一个临时的变量里面
- * 2.传入的header与 上面的合并 放入 request['headers']中
- *
- */
+
 $client  = new \Webguosai\HttpClient([
     'timeout' => 5,
 ]);

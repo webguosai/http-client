@@ -90,6 +90,11 @@ $data = http_build_query($data);
 // application/json
 $data = json_encode($data); 
 
+// 文件上传
+$data = [
+    'file' => new \CURLFile('1.jpg'),
+];
+
 $response = $http->post($url, $data);
 ```
 
@@ -108,6 +113,7 @@ Cookie: cookie=6666666';
 
 $response = $http->post($url, $data, $headers);
 ```
+
 
 ## 实操
 ```php
