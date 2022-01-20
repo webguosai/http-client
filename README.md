@@ -90,7 +90,7 @@ $data = http_build_query($data);
 // application/json
 $data = json_encode($data); 
 
-// 文件上传
+// 文件上传 $_FILES['file'] 接收
 $data = [
     'file' => new \CURLFile('1.jpg'),
 ];
