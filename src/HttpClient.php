@@ -25,7 +25,7 @@ class HttpClient
     protected $initHeaders = [];
     //自定义的header头
     protected $customHeaders = [
-        'User-Agent: guosai browser',
+        //'User-Agent: guosai browser',
     ];
 
     /** 响应 **/
@@ -64,7 +64,7 @@ class HttpClient
     }
 
 
-    public function get(string $url, $data = [], $headers = [])
+    public function get($url, $data = [], $headers = [])
     {
         /** 拼接url中的get参数 **/
         if (!empty($data)) {
@@ -82,7 +82,7 @@ class HttpClient
         return $this->request($url, 'GET', [], $headers);
     }
 
-    public function post(string $url, $data = [], $headers = [])
+    public function post($url, $data = [], $headers = [])
     {
         if (is_string($data)) {
             if (!is_null(json_decode($data))) {
@@ -117,7 +117,7 @@ class HttpClient
         return $this;
     }
 
-    public function request(string $url, $method = 'GET', $data = [], $headers = [])
+    public function request($url, $method = 'GET', $data = [], $headers = [])
     {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
