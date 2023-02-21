@@ -2,6 +2,23 @@
 
 require_once '../vendor/autoload.php';
 
+// 使用socks5
+$url = 'https://www.google.com.hk/';
+$response = (new \Webguosai\HttpClient([
+    'timeout' => 5,
+    'useSocks5' => true,
+    'proxyIps' => ['127.0.0.1:9527']
+]))->get($url);
+
+if ($response->ok()) {
+    dump($response->body);
+} else {
+    dump($response->getErrorMsg());
+}
+
+
+exit;
+
 
 $client  = new \Webguosai\HttpClient([
     'timeout' => 5,

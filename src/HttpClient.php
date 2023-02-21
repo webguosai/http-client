@@ -42,8 +42,9 @@ class HttpClient
         //超时
         'timeout'       => 3,
 
-        //代理ip池
-        'proxyIps'      => [],
+        //代理
+        'useSocks5'     => false,// 是否使用 socks5
+        'proxyIps'      => [],// 代理ip，多个会随机取一个
 
         //允许重定向及重定向次数
         'redirects'     => false,
@@ -62,7 +63,6 @@ class HttpClient
     {
         $this->options = array_merge($this->options, $options);
     }
-
 
     public function get($url, $data = [], $headers = [])
     {
@@ -126,8 +126,17 @@ class HttpClient
         //代理
         if (!empty($this->options['proxyIps'])) {
             $this->request['proxyIp'] = $this->options['proxyIps'][array_rand($this->options['proxyIps'])];
+
+            if ($this->options['useSocks5']) {
+                // SOCKS5代理
+                curl_setopt($ch,CURLOPT_PROXYTYPE,CURLPROXY_SOCKS5);
+            }
             curl_setopt($ch, CURLOPT_PROXY, $this->request['proxyIp']);
         }
+
+        // SOCKS5代理
+//        curl_setopt($ch,CURLOPT_PROXYTYPE,CURLPROXY_SOCKS5);
+//        curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:9527');
 
         //当http状态为301 302重定向的时候。会进行跳转
         if ($this->options['redirects']) {

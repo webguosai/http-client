@@ -27,6 +27,7 @@ $options = [
     'timeout'     => 3,
 
     //代理ip池(允许填写多个,会随机使用一组)
+    'useSocks5'   => true, // 使用 socks5 代理
     'proxyIps'    => [
         //格式为【ip:端口】
         '0.0.0.0:8888'
