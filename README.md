@@ -58,6 +58,7 @@ $data = ['data' => '111', 'data2' => '222'];
 $response = $http->get($url, $data, $headers);
 $response = $http->post($url, $data, $headers);
 $response = $http->put($url, $data, $headers);
+$response = $http->patch($url, $data, $headers);
 $response = $http->delete($url, $data, $headers);
 $response = $http->head($url, $data, $headers);
 $response = $http->options($url, $data, $headers);
