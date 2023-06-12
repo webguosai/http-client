@@ -10,6 +10,7 @@ use Webguosai\Http\Consts;
  * @package Webguosai
  *
  * @method put(string $url, string|array $data, string|array $headers)
+ * @method patch(string $url, string|array $data, string|array $headers)
  * @method delete(string $url, string|array $data, string|array $headers)
  * @method head(string $url, string|array $data, string|array $headers)
  * @method options(string $url, string|array $data, string|array $headers)
@@ -101,7 +102,7 @@ class HttpClient
 
     public function __call($name, $args)
     {
-        if (in_array($name, ['put', 'delete', 'head', 'options'])) {
+        if (in_array($name, ['put', 'patch', 'delete', 'head', 'options'])) {
             $url     = $args[0];
             $method  = $name;
             $data    = empty($args[1]) ? [] : $args[1];
@@ -133,10 +134,6 @@ class HttpClient
             }
             curl_setopt($ch, CURLOPT_PROXY, $this->request['proxyIp']);
         }
-
-        // SOCKS5代理
-//        curl_setopt($ch,CURLOPT_PROXYTYPE,CURLPROXY_SOCKS5);
-//        curl_setopt($ch, CURLOPT_PROXY, '127.0.0.1:9527');
 
         //当http状态为301 302重定向的时候。会进行跳转
         if ($this->options['redirects']) {
